@@ -6,6 +6,6 @@ package com.javax0.jdsl;
  * @author Peter Verhas
  * 
  */
-public interface NonTerminal extends SymbolAnalyzer {
+public interface NonTerminal extends Analyzer {
 
 }
