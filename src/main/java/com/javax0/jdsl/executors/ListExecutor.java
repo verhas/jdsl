@@ -1,4 +1,4 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.executors;
 
 import java.util.List;
 

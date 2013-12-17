@@ -1,10 +1,18 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
-import static com.javax0.jdsl.MockAnalyzerGeneratorUtil.successNTimesThenFail;
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.successNTimesThenFail;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.javax0.jdsl.analyzers.AnalysisResult;
+import com.javax0.jdsl.analyzers.Analyzer;
+import com.javax0.jdsl.analyzers.SequenceAnalyzer;
+import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
+import com.javax0.jdsl.analyzers.SourceCode;
+import com.javax0.jdsl.analyzers.StringSourceCode;
+import com.javax0.jdsl.executors.ListExecutor;
 public class SequenceAnalyzerTest {
 
     final static ListExecutor noExecutor = null;

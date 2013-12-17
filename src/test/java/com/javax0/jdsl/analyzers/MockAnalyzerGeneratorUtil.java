@@ -1,8 +1,14 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.OngoingStubbing;
+
+import com.javax0.jdsl.analyzers.AnalysisResult;
+import com.javax0.jdsl.analyzers.Analyzer;
+import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
+import com.javax0.jdsl.analyzers.SourceCode;
+import com.javax0.jdsl.executors.ListExecutor;
 
 public class MockAnalyzerGeneratorUtil {
     private MockAnalyzerGeneratorUtil() {

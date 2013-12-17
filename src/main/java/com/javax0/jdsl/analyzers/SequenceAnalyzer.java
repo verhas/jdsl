@@ -1,7 +1,10 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import com.javax0.jdsl.executors.Executor;
+import com.javax0.jdsl.executors.ListExecutor;
 
 /**
  * Implements an analyzer that accepts a code if the underlying analyzers accept

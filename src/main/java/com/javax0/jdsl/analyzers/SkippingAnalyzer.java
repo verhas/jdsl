@@ -1,4 +1,6 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
+
+import com.javax0.jdsl.executors.Executor;
 
 /**
  * A skipping analyzer is an analyzer that eats up character from the start of

@@ -1,4 +1,4 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
 /**
  * SourceCode represents the character stream of the program source code.

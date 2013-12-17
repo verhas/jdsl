@@ -1,4 +1,4 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
 import java.util.HashMap;
 import java.util.Map;

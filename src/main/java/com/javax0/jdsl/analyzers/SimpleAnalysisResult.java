@@ -1,4 +1,6 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
+
+import com.javax0.jdsl.executors.Executor;
 
 /**
  * A simple implementation of the interface {@link AnalysisResult} that stores

@@ -1,4 +1,4 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
 /**
  * SpaceIgnoringAnalyzer(s) are analyzers that ignore parts of the input,

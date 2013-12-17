@@ -1,4 +1,4 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
 public class StringSourceCode implements SourceCode {
     public static final SourceCode EMPTY_SOURCE = new StringSourceCode("");

@@ -1,7 +1,10 @@
-package com.javax0.jdsl;
+package com.javax0.jdsl.analyzers;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.javax0.jdsl.analyzers.SourceCode;
+import com.javax0.jdsl.analyzers.StringSourceCode;
 
 public class StringSourceCodeTest {
 
