@@ -16,7 +16,7 @@ import java.util.List;
  * @author Peter Verhas
  * 
  */
-public class SequenceAnalyzer implements Analyzer {
+public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
     private final Analyzer analyzer;
     private final ListExecutor listExecutor;
     private final int minRepetition;
@@ -40,36 +40,35 @@ public class SequenceAnalyzer implements Analyzer {
     }
 
     @Override
-    public AnalysisResult analyze(SourceCode input) {
-        SourceCode rollingInput = input;
-        List<Executor> executors = new LinkedList<>();
+    public AnalysisResult analyze() {
+        final List<Executor> executors = new LinkedList<>();
         if (listExecutor != null) {
             listExecutor.setList(executors);
         }
+        
         int i = 0;
         while (i < minRepetition) {
-            AnalysisResult result = analyzer.analyze(rollingInput);
+            AnalysisResult result = analyzer.analyze(getInput());
             if (!result.wasSuccessful()) {
                 return SimpleAnalysisResult.failed();
             }
             if (result.getExecutor() != null) {
                 executors.add(result.getExecutor());
             }
-            rollingInput = result.remainingSourceCode();
+            setInput(result.remainingSourceCode());
             i++;
         }
         while (maxRepetition == -1 || i < maxRepetition) {
-            AnalysisResult result = analyzer.analyze(rollingInput);
-            System.out.println(i);
+            AnalysisResult result = analyzer.analyze(getInput());
             if (!result.wasSuccessful()) {
-                return SimpleAnalysisResult.success(rollingInput, listExecutor);
+                return SimpleAnalysisResult.success(getInput(), listExecutor);
             }
             if (result.getExecutor() != null) {
                 executors.add(result.getExecutor());
             }
-            rollingInput = result.remainingSourceCode();
+            setInput(result.remainingSourceCode());
             i++;
         }
-        return SimpleAnalysisResult.success(rollingInput, listExecutor);
+        return SimpleAnalysisResult.success(getInput(), listExecutor);
     }
 }

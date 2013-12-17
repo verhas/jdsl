@@ -25,7 +25,7 @@ public class KeywordAnalyzerTest {
 		final Integer[] tokens = new Integer[Keywords.values().length];
 		WHEN: {
 			int i = 0;
-			while (sc.lenght() > 0) {
+			while (sc.length() > 0) {
 				final AnalysisResult result = ka.analyze(sc);
 				final Executor executor = result.getExecutor();
 				Assert.assertNotNull(executor);

@@ -40,7 +40,7 @@ public class NumberAnalyzerTest {
             remainder = result.remainingSourceCode();
         }
         THEN: {
-            Assert.assertEquals(remainderLength, remainder.lenght());
+            Assert.assertEquals(remainderLength, remainder.length());
         }
     }
 

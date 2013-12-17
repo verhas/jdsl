@@ -6,7 +6,7 @@ import java.util.List;
  * An executor that executes a code using the underlying executors provided in
  * the form of list.
  * 
- * @author verhasp
+ * @author Peter Verhas
  * 
  */
 public interface ListExecutor extends Executor {

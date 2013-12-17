@@ -1,9 +1,14 @@
 package com.javax0.jdsl;
 
 public class StringSourceCode implements SourceCode {
+    public static final SourceCode EMPTY_SOURCE = new StringSourceCode("");
+
     private final String source;
 
     public StringSourceCode(String source) {
+        if (source == null) {
+            throw new IllegalArgumentException("source can not be noll when constructing StringSourceCode object");
+        }
         this.source = source;
     }
 
@@ -13,17 +18,39 @@ public class StringSourceCode implements SourceCode {
     }
 
     @Override
-    public int lenght() {
+    public int length() {
         return source.length();
     }
 
     @Override
     public SourceCode rest(int i) {
+        final SourceCode result;
         if (i < source.length()) {
-            return new StringSourceCode(source.substring(i));
+            if (i == 0) {
+                result = this;
+            } else {
+                result = new StringSourceCode(source.substring(i));
+            }
         } else {
-            return new StringSourceCode("");
+            result = EMPTY_SOURCE;
         }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return source.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        return source.equals(((StringSourceCode) obj).source);
     }
 
 }

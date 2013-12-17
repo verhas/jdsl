@@ -28,7 +28,7 @@ public class KeywordAnalyzer implements Analyzer {
     public AnalysisResult analyze(SourceCode input) {
         startOfInput = new StringBuilder();
         for (Entry<String, Integer> entry : map.entrySet()) {
-            if (entry.getKey().length() <= input.lenght()) {
+            if (entry.getKey().length() <= input.length()) {
                 if (entry.getKey().length() > startOfInput.length()) {
                     fillUpBufferTo(entry.getKey().length(), input);
                 }

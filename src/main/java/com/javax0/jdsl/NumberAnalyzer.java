@@ -3,7 +3,7 @@ package com.javax0.jdsl;
 public class NumberAnalyzer implements Analyzer {
 
     private boolean isIndexInRange(int i, SourceCode input) {
-        return i < input.lenght();
+        return i < input.length();
     }
 
     private boolean isDigit(int i, SourceCode input) {
