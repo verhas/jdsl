@@ -3,15 +3,15 @@ package com.javax0.jdsl.analyzers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class KeywordAnalyzerTest {
+public class TerminalSymbolAnalyzerTest {
 
 	@SuppressWarnings("unused")
 	@Test
 	public void given_InputStringAndKeyword_when_CallingAnalysis_then_ReturnsSuccess() {
-		final KeywordAnalyzer ka;
+		final TerminalSymbolAnalyzer ka;
 		SourceCode sc;
 		GIVEN: {
-			ka = new KeywordAnalyzer("KEYWORD");
+			ka = new TerminalSymbolAnalyzer("KEYWORD");
 			sc = new StringSourceCode("KEYWORD");
 		}
 
@@ -27,10 +27,10 @@ public class KeywordAnalyzerTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void given_InputStringAndKeywordANdSomeExtraCharacters_when_CallingAnalysis_then_ReturnsSuccess() {
-		final KeywordAnalyzer ka;
+		final TerminalSymbolAnalyzer ka;
 		SourceCode sc;
 		GIVEN: {
-			ka = new KeywordAnalyzer("KEYWORD");
+			ka = new TerminalSymbolAnalyzer("KEYWORD");
 			sc = new StringSourceCode("KEYWORDHAHAHA");
 		}
 
@@ -46,10 +46,10 @@ public class KeywordAnalyzerTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void given_NoKeywordStartingInputStringAndKeyword_when_CallingAnalysis_then_ReturnsFailure() {
-		final KeywordAnalyzer ka;
+		final TerminalSymbolAnalyzer ka;
 		SourceCode sc;
 		GIVEN: {
-			ka = new KeywordAnalyzer("KEYWORD");
+			ka = new TerminalSymbolAnalyzer("KEYWORD");
 			sc = new StringSourceCode("HKEYWORD");
 		}
 
@@ -66,10 +66,10 @@ public class KeywordAnalyzerTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void given_ShortInputStringAndKeyword_when_CallingAnalysis_then_ReturnsFailure() {
-		final KeywordAnalyzer ka;
+		final TerminalSymbolAnalyzer ka;
 		SourceCode sc;
 		GIVEN: {
-			ka = new KeywordAnalyzer("KEYWORD");
+			ka = new TerminalSymbolAnalyzer("KEYWORD");
 			sc = new StringSourceCode("KEYWOR");
 		}
 

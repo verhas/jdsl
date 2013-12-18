@@ -1,10 +1,10 @@
 package com.javax0.jdsl.analyzers;
 
-public class KeywordAnalyzer implements Analyzer {
+public class TerminalSymbolAnalyzer implements Analyzer {
 
 	private final String keyword;
 
-	public KeywordAnalyzer(final String keyword) {
+	public TerminalSymbolAnalyzer(final String keyword) {
 		this.keyword = keyword;
 	}
 
