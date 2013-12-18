@@ -3,47 +3,82 @@ package com.javax0.jdsl.analyzers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.javax0.jdsl.analyzers.AnalysisResult;
-import com.javax0.jdsl.analyzers.KeywordAnalyzer;
-import com.javax0.jdsl.analyzers.SourceCode;
-import com.javax0.jdsl.analyzers.StringSourceCode;
-import com.javax0.jdsl.executors.Executor;
-
 public class KeywordAnalyzerTest {
-
-	private static enum Keywords {
-		IF, THEN, ELSE, GOTO, ABSTRACT
-	}
 
 	@SuppressWarnings("unused")
 	@Test
-	public void given_InputStringAndKeyWordSet_when_CallingAnalysis_then_ReturnsTheKeyWords() {
+	public void given_InputStringAndKeyword_when_CallingAnalysis_then_ReturnsSuccess() {
 		final KeywordAnalyzer ka;
 		SourceCode sc;
 		GIVEN: {
-			ka = new KeywordAnalyzer();
-			for (Keywords keyword : Keywords.values()) {
-				ka.keyword(keyword.name(), keyword.ordinal());
-			}
-			sc = new StringSourceCode("IFTHENELSEGOTOABSTRACT");
+			ka = new KeywordAnalyzer("KEYWORD");
+			sc = new StringSourceCode("KEYWORD");
 		}
 
-		final Integer[] tokens = new Integer[Keywords.values().length];
+		final AnalysisResult result;
 		WHEN: {
-			int i = 0;
-			while (sc.length() > 0) {
-				final AnalysisResult result = ka.analyze(sc);
-				final Executor executor = result.getExecutor();
-				Assert.assertNotNull(executor);
-				tokens[i++] = (Integer) executor.execute();
-				sc = result.remainingSourceCode();
-			}
+			result = ka.analyze(sc);
 		}
 		THEN: {
-			int i = 0;
-			for (int token : tokens) {
-				Assert.assertEquals(i++, token);
-			}
+			Assert.assertTrue(result.wasSuccessful());
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	@Test
+	public void given_InputStringAndKeywordANdSomeExtraCharacters_when_CallingAnalysis_then_ReturnsSuccess() {
+		final KeywordAnalyzer ka;
+		SourceCode sc;
+		GIVEN: {
+			ka = new KeywordAnalyzer("KEYWORD");
+			sc = new StringSourceCode("KEYWORDHAHAHA");
+		}
+
+		final AnalysisResult result;
+		WHEN: {
+			result = ka.analyze(sc);
+		}
+		THEN: {
+			Assert.assertTrue(result.wasSuccessful());
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	@Test
+	public void given_NoKeywordStartingInputStringAndKeyword_when_CallingAnalysis_then_ReturnsFailure() {
+		final KeywordAnalyzer ka;
+		SourceCode sc;
+		GIVEN: {
+			ka = new KeywordAnalyzer("KEYWORD");
+			sc = new StringSourceCode("HKEYWORD");
+		}
+
+		final AnalysisResult result;
+		WHEN: {
+			result = ka.analyze(sc);
+		}
+		THEN: {
+			Assert.assertFalse(result.wasSuccessful());
+		}
+	}
+	
+	
+	@SuppressWarnings("unused")
+	@Test
+	public void given_ShortInputStringAndKeyword_when_CallingAnalysis_then_ReturnsFailure() {
+		final KeywordAnalyzer ka;
+		SourceCode sc;
+		GIVEN: {
+			ka = new KeywordAnalyzer("KEYWORD");
+			sc = new StringSourceCode("KEYWOR");
+		}
+
+		final AnalysisResult result;
+		WHEN: {
+			result = ka.analyze(sc);
+		}
+		THEN: {
+			Assert.assertFalse(result.wasSuccessful());
 		}
 	}
 }

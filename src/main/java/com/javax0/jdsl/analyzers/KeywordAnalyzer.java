@@ -1,43 +1,25 @@
 package com.javax0.jdsl.analyzers;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 public class KeywordAnalyzer implements Analyzer {
 
-    private Map<String, Integer> map = new HashMap<>();
+	private final String keyword;
 
-    public void keyword(String keyword, Integer token) {
-        map.put(keyword, token);
-    }
+	public KeywordAnalyzer(final String keyword) {
+		this.keyword = keyword;
+	}
 
-    private StringBuilder startOfInput;
+	@Override
+	public AnalysisResult analyze(final SourceCode input) {
+		if (keyword.length() > input.length()) {
+			return SimpleAnalysisResult.failed();
+		}
 
-    private void fillUpBufferTo(int length, SourceCode input) {
-        for (int i = startOfInput.length(); i < length; i++) {
-            startOfInput.append(input.charAt(i));
-        }
-    }
-
-    private TerminalSymbolExecutor<Integer> token(Integer t) {
-        return new TerminalSymbolExecutor<Integer>(t);
-    }
-
-    @Override
-    public AnalysisResult analyze(SourceCode input) {
-        startOfInput = new StringBuilder();
-        for (Entry<String, Integer> entry : map.entrySet()) {
-            if (entry.getKey().length() <= input.length()) {
-                if (entry.getKey().length() > startOfInput.length()) {
-                    fillUpBufferTo(entry.getKey().length(), input);
-                }
-            }
-            if (startOfInput.toString().startsWith(entry.getKey())) {
-                return SimpleAnalysisResult.success(input.rest(entry.getKey().length()), token(entry.getValue()));
-            }
-        }
-        return SimpleAnalysisResult.failed();
-    }
+		for (int i = 0; i < keyword.length(); i++) {
+			if (keyword.charAt(i) != input.charAt(i)) {
+				return SimpleAnalysisResult.failed();
+			}
+		}
+		return SimpleAnalysisResult.success(input.rest(keyword.length()), null);
+	}
 
 }

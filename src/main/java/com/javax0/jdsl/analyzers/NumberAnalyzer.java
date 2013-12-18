@@ -1,5 +1,7 @@
 package com.javax0.jdsl.analyzers;
 
+import com.javax0.jdsl.executors.TerminalSymbolExecutor;
+
 public class NumberAnalyzer implements Analyzer {
 
     private boolean isIndexInRange(int i, SourceCode input) {

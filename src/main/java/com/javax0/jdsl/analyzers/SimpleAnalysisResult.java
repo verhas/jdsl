@@ -24,8 +24,10 @@ public class SimpleAnalysisResult implements AnalysisResult {
         this.executor = executor;
     }
 
+    private static final SimpleAnalysisResult FAILED_RESULT = new SimpleAnalysisResult(false, null, null);
+    
     public static SimpleAnalysisResult failed() {
-        return new SimpleAnalysisResult(false, null, null);
+        return FAILED_RESULT;
     }
 
     public static SimpleAnalysisResult success(SourceCode in, Executor r) {

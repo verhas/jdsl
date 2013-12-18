@@ -1,6 +1,5 @@
-package com.javax0.jdsl.analyzers;
+package com.javax0.jdsl.executors;
 
-import com.javax0.jdsl.executors.Executor;
 
 /**
  * Terminal symbols do not have much to calculate when they are executed. They
