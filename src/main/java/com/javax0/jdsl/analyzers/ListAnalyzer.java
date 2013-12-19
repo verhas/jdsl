@@ -18,51 +18,55 @@ import com.javax0.jdsl.executors.ListExecutor;
  */
 public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 
-    private final List<Analyzer> analyzerList = new LinkedList<>();
+	private final List<Analyzer> analyzerList = new LinkedList<>();
 
-    /**
-     * Add one or more analyzers to the list of the analyzers that are used to
-     * analyze the source.
-     * 
-     * @param analyzers
-     */
-    public void add(Analyzer... analyzers) {
-        for (Analyzer analyzer : analyzers) {
-            analyzerList.add(analyzer);
-        }
-    }
+	protected List<Analyzer> getAnalyzerList() {
+		return analyzerList;
+	}
 
-    private final ListExecutor listExecutor;
+	/**
+	 * Add one or more analyzers to the list of the analyzers that are used to
+	 * analyze the source.
+	 * 
+	 * @param analyzers
+	 */
+	public void add(Analyzer... analyzers) {
+		for (Analyzer analyzer : analyzers) {
+			analyzerList.add(analyzer);
+		}
+	}
 
-    /**
-     * Set the executor that will be returned by the analysis. During the
-     * analysis this executor will be furnished with the underlying executors
-     * from the result of the analysis performed by the list elements.
-     * 
-     * @param listExecutor
-     */
-    public ListAnalyzer(ListExecutor listExecutor) {
-        this.listExecutor = listExecutor;
-    }
+	private final ListExecutor listExecutor;
 
-    @Override
-    public AnalysisResult analyze() {
-        final List<Executor> executors = new LinkedList<>();
-        if (listExecutor != null) {
-            listExecutor.setList(executors);
-        }
-        
-        for (Analyzer analyzer : analyzerList) {
-            AnalysisResult result = analyzer.analyze(getInput());
-            if (!result.wasSuccessful()) {
-                return SimpleAnalysisResult.failed();
-            }
-            if (result.getExecutor() != null) {
-                executors.add(result.getExecutor());
-            }
-            setInput(result.remainingSourceCode());
-        }
-        return SimpleAnalysisResult.success(getInput(), listExecutor);
-    }
+	/**
+	 * Set the executor that will be returned by the analysis. During the
+	 * analysis this executor will be furnished with the underlying executors
+	 * from the result of the analysis performed by the list elements.
+	 * 
+	 * @param listExecutor
+	 */
+	public ListAnalyzer(ListExecutor listExecutor) {
+		this.listExecutor = listExecutor;
+	}
+
+	@Override
+	public AnalysisResult analyze() {
+		final List<Executor> executors = new LinkedList<>();
+		if (listExecutor != null) {
+			listExecutor.setList(executors);
+		}
+
+		for (Analyzer analyzer : analyzerList) {
+			AnalysisResult result = analyzer.analyze(getInput());
+			if (!result.wasSuccessful()) {
+				return SimpleAnalysisResult.failed();
+			}
+			if (result.getExecutor() != null) {
+				executors.add(result.getExecutor());
+			}
+			setInput(result.remainingSourceCode());
+		}
+		return SimpleAnalysisResult.success(getInput(), listExecutor);
+	}
 
 }
