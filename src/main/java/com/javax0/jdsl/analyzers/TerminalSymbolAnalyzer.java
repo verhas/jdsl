@@ -1,5 +1,7 @@
 package com.javax0.jdsl.analyzers;
 
+import com.javax0.jdsl.executors.Executor;
+
 public class TerminalSymbolAnalyzer implements Analyzer {
 
 	private final String keyword;
@@ -19,7 +21,7 @@ public class TerminalSymbolAnalyzer implements Analyzer {
 				return SimpleAnalysisResult.failed();
 			}
 		}
-		return SimpleAnalysisResult.success(input.rest(keyword.length()), null);
+		return SimpleAnalysisResult.success(input.rest(keyword.length()), Executor.NONE);
 	}
 
 }
