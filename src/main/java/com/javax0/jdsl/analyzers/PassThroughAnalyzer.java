@@ -17,6 +17,11 @@ public class PassThroughAnalyzer implements Analyzer {
 
 	@Override
 	public AnalysisResult analyze(SourceCode input) {
+		if (underlyingAnalyzer == null) {
+			throw new RuntimeException(
+					PassThroughAnalyzer.class.toString()
+							+ " can not analyze until the underlying analyzer was not set");
+		}
 		return underlyingAnalyzer.analyze(input);
 	}
 
