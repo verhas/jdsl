@@ -3,12 +3,17 @@ package com.javax0.jdsl;
 import static com.javax0.jdsl.analyzers.SequenceAnalyzer.INFINITE;
 
 import com.javax0.jdsl.analyzers.AlternativesAnalyzer;
+import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
 import com.javax0.jdsl.analyzers.ListAnalyzer;
 import com.javax0.jdsl.analyzers.NoExecutorListAnalyzer;
+import com.javax0.jdsl.analyzers.NumberAnalyzer;
 import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
 import com.javax0.jdsl.analyzers.SequenceAnalyzer;
+import com.javax0.jdsl.analyzers.SkippingAnalyzer;
+import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.analyzers.TerminalSymbolAnalyzer;
+import com.javax0.jdsl.analyzers.WhiteSpaceSkippingAnalyzer;
 import com.javax0.jdsl.executors.ListExecutor;
 import com.javax0.jdsl.executors.SimpleListExecutor;
 
@@ -26,9 +31,31 @@ import com.javax0.jdsl.executors.SimpleListExecutor;
  * command.define( or(ifCommand,whileCommand,letCommand,printCommand) );
  * Analyzer programAnalyzer = is.many(command);
  */
-public class Grammar {
+public abstract class GrammarDefinition implements Analyzer {
 
-	private Grammar() {
+	abstract void define();
+
+	protected Analyzer grammar = null;
+
+	public final AnalysisResult analyze(SourceCode input) {
+		if (grammar == null) {
+			define();
+		}
+		if (grammar == null) {
+			throw new IllegalArgumentException(
+					"'grammar' was not set in the grammar definition");
+		}
+		return grammar.analyze(input);
+	}
+
+	private SkippingAnalyzer skippingAnalyzer;
+
+	public final void setSkippingAnalyzer(SkippingAnalyzer skippingAnalyzer) {
+		this.skippingAnalyzer = skippingAnalyzer;
+	}
+
+	public final void skipSpaces() {
+		setSkippingAnalyzer(new WhiteSpaceSkippingAnalyzer());
 	}
 
 	/**
@@ -55,11 +82,12 @@ public class Grammar {
 	 * @param keywords
 	 * @return
 	 */
-	public static Analyzer kw(String... keywords) {
+	public final Analyzer kw(String... keywords) {
 		if (keywords.length == 1) {
 			return new TerminalSymbolAnalyzer(keywords[0]);
 		}
 		ListAnalyzer keywordListAnalyzer = new NoExecutorListAnalyzer();
+		keywordListAnalyzer.setSkipAnalyzer(skippingAnalyzer);
 		for (String keyword : keywords) {
 			keywordListAnalyzer.add(new TerminalSymbolAnalyzer(keyword));
 		}
@@ -72,7 +100,7 @@ public class Grammar {
 	 * is some recursive (circular) definition in the grammar. (And usually
 	 * there is.)
 	 */
-	public static PassThroughAnalyzer definedLater() {
+	public final PassThroughAnalyzer definedLater() {
 		return new PassThroughAnalyzer();
 	}
 
@@ -101,8 +129,9 @@ public class Grammar {
 	 * effect as if the strings were used individually to define terminal
 	 * symbols.
 	 */
-	public static Analyzer list(ListExecutor listExecutor, Analyzer... analyzers) {
+	public final Analyzer list(ListExecutor listExecutor, Analyzer... analyzers) {
 		final ListAnalyzer listAnalyzer = new ListAnalyzer(listExecutor);
+		listAnalyzer.setSkipAnalyzer(skippingAnalyzer);
 		for (Analyzer analyzer : analyzers) {
 			addAnalyzerFlattened(listAnalyzer, analyzer);
 		}
@@ -116,7 +145,7 @@ public class Grammar {
 	 * list should simply be executed one after the other, or when there is
 	 * nothing to execute in a list.
 	 */
-	public static Analyzer list(Analyzer... analyzers) {
+	public final Analyzer list(Analyzer... analyzers) {
 		return list(new SimpleListExecutor(), analyzers);
 	}
 
@@ -124,7 +153,7 @@ public class Grammar {
 	 * Creates an {@lin AlternativesAnalyzer} with the arguments as
 	 * alternatives.
 	 */
-	public static Analyzer or(Analyzer... analyzers) {
+	public final Analyzer or(Analyzer... analyzers) {
 		AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
 		alternativesAnalyzer.add(analyzers);
 		return alternativesAnalyzer;
@@ -135,11 +164,15 @@ public class Grammar {
 	 * This means that the underlying analyzer need not be matched, or may be
 	 * matched once.
 	 */
-	public static Analyzer optional(ListExecutor listExecutor, Analyzer analyzer) {
-		return new SequenceAnalyzer(listExecutor, analyzer, 0, 1);
+	public final Analyzer optional(ListExecutor listExecutor, Analyzer analyzer) {
+		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
+				analyzer, 0, 1);
+		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
+		return sequenceAnalyzer;
 	}
 
-	public static Analyzer optional(ListExecutor listExecutor, Analyzer... analyzers) {
+	public final Analyzer optional(ListExecutor listExecutor,
+			Analyzer... analyzers) {
 		return optional(listExecutor, list(analyzers));
 	}
 
@@ -148,36 +181,50 @@ public class Grammar {
 	 * use an external executor, but rather creates a new
 	 * {@link SimpleListExecutor}.
 	 */
-	public static Analyzer optional(Analyzer analyzer) {
+	public final Analyzer optional(Analyzer analyzer) {
 		return optional(new SimpleListExecutor(), analyzer);
 	}
 
-	public static Analyzer optional(Analyzer... analyzers) {
+	public final Analyzer optional(Analyzer... analyzers) {
 		return optional(new SimpleListExecutor(), list(analyzers));
 	}
 
-	public static Analyzer many(ListExecutor listExecutor, Analyzer analyzer, int min,
-			int max) {
-		return new SequenceAnalyzer(listExecutor, analyzer, 1, -1);
+	public final Analyzer many(ListExecutor listExecutor, Analyzer analyzer,
+			int min, int max) {
+		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
+				analyzer, 1, -1);
+		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
+		return sequenceAnalyzer;
 	}
 
-	public static Analyzer many(Analyzer analyzer, int min, int max) {
+	public final Analyzer many(Analyzer analyzer, int min, int max) {
 		return many(new SimpleListExecutor(), analyzer);
 	}
 
-	public static Analyzer manyOptional(ListExecutor listExecutor, Analyzer analyzer) {
-		return new SequenceAnalyzer(listExecutor, analyzer, 0, INFINITE);
+	public final Analyzer manyOptional(ListExecutor listExecutor,
+			Analyzer analyzer) {
+		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
+				analyzer, 0, INFINITE);
+		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
+		return sequenceAnalyzer;
 	}
 
-	public static Analyzer manyOptional(Analyzer analyzer) {
+	public final Analyzer manyOptional(Analyzer analyzer) {
 		return manyOptional(new SimpleListExecutor(), analyzer);
 	}
 
-	public static Analyzer many(ListExecutor listExecutor, Analyzer analyzer) {
-		return new SequenceAnalyzer(listExecutor, analyzer, 1, INFINITE);
+	public final Analyzer many(ListExecutor listExecutor, Analyzer analyzer) {
+		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
+				analyzer, 1, INFINITE);
+		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
+		return sequenceAnalyzer;
 	}
 
-	public static Analyzer many(Analyzer analyzer) {
+	public final Analyzer many(Analyzer analyzer) {
 		return many(new SimpleListExecutor(), analyzer);
+	}
+
+	public final Analyzer number() {
+		return new NumberAnalyzer();
 	}
 }

@@ -8,9 +8,9 @@ import java.util.List;
  * can be flattened when such an analyzer is a member of a list.
  * <p>
  * This feature is used by the method
- * {@link com.javax0.jdsl.Grammar#list(Analyzer...)} when there are keyword
+ * {@link com.javax0.jdsl.GrammarDefinition#list(Analyzer...)} when there are keyword
  * lists in the argument. This type of list analyzer is returned by the method
- * {@link com.javax0.jdsl.Grammar#kw(String...)} when there are more than one
+ * {@link com.javax0.jdsl.GrammarDefinition#kw(String...)} when there are more than one
  * arguments, and having that passed to the method {@code list()} the latter one
  * is able to flatten it to a single list. This way
  * 
