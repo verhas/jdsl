@@ -58,7 +58,7 @@ public class NumberAnalyzer implements Analyzer {
 			}
 			i++;
 		}
-		if (Character.isDigit(input.charAt(i))) {
+		if (isIndexInRange(i, input) && Character.isDigit(input.charAt(i))) {
 			long result = 0;
 			while (isDigit(i, input)) {
 				result = 10 * result + input.charAt(i) - '0';
@@ -105,5 +105,10 @@ public class NumberAnalyzer implements Analyzer {
 		} else {
 			return SimpleAnalysisResult.failed(NumberAnalyzer.class);
 		}
+	}
+	
+	@Override
+	public String toString(){
+		return "NumberAnalyzer";
 	}
 }
