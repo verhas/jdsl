@@ -5,16 +5,12 @@ import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.successNTimesT
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.javax0.jdsl.analyzers.AnalysisResult;
-import com.javax0.jdsl.analyzers.Analyzer;
-import com.javax0.jdsl.analyzers.ListAnalyzer;
-import com.javax0.jdsl.analyzers.SourceCode;
-import com.javax0.jdsl.analyzers.StringSourceCode;
+import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 
 public class ListAnalyzerTest {
 
-    final static ListExecutor noExecutor = null;
+    final static Factory<ListExecutor> noExecutor = null;
     final static SourceCode noSourceCode = null;
 
     @SuppressWarnings("unused")

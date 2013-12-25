@@ -9,6 +9,7 @@ import com.javax0.jdsl.analyzers.Analyzer;
 import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
 import com.javax0.jdsl.analyzers.StringSourceCode;
 import com.javax0.jdsl.executors.Executor;
+import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 
 public class GrammarTest {
@@ -19,20 +20,29 @@ public class GrammarTest {
 			@Override
 			void define() {
 				skipSpaces();
-				PassThroughAnalyzer command = definedLater();
-				PassThroughAnalyzer expression = definedLater();
-				Analyzer ifStatement = list(new IfExecutor(), kw("if", "("),
-						expression, kw(")", "{"), command, kw("}"),
-						optional(kw("else", "{"), command, kw("}")));
+				PassThroughAnalyzer command = definedLater("command");
+				PassThroughAnalyzer expression = definedLater("expression");
+				Analyzer ifStatement = list(new IfExecutorFactory(),
+						kw("if", "("), expression, kw(")", "{"), command,
+						kw("}"), optional(kw("else", "{"), command, kw("}")));
 				expression.define(number());
-				command.define(or(ifStatement, kw("A", "B"),
+				command.define(or(ifStatement, kw("A"), kw("B"),
 						list(kw("{"), many(command), kw("}"))));
 				grammar = many(command);
 			}
 		};
 		AnalysisResult result = ifGrammar.analyze(new StringSourceCode(
-				"if(1){A}else{B}"));
+				"if(1){A} else{B}"));
 		result.getExecutor().execute();
+	}
+
+	private static class IfExecutorFactory implements Factory<ListExecutor> {
+
+		@Override
+		public ListExecutor get() {
+			return new IfExecutor();
+		}
+
 	}
 
 	private static class IfExecutor implements ListExecutor {
@@ -40,7 +50,16 @@ public class GrammarTest {
 		@Override
 		public Object execute() {
 			Object condition = executorList.get(0).execute();
-			return null;
+			Long one = (Long) condition;
+			if (one != 0) {
+				return executorList.get(1).execute();
+			} else {
+				if (executorList.size() > 2) {
+					return executorList.get(2).execute();
+				} else {
+					return null;
+				}
+			}
 		}
 
 		private List<Executor> executorList;

@@ -7,15 +7,17 @@ import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
 import com.javax0.jdsl.analyzers.ListAnalyzer;
 import com.javax0.jdsl.analyzers.NoExecutorListAnalyzer;
-import com.javax0.jdsl.analyzers.NumberAnalyzer;
 import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
 import com.javax0.jdsl.analyzers.SequenceAnalyzer;
 import com.javax0.jdsl.analyzers.SkippingAnalyzer;
 import com.javax0.jdsl.analyzers.SourceCode;
-import com.javax0.jdsl.analyzers.TerminalSymbolAnalyzer;
 import com.javax0.jdsl.analyzers.WhiteSpaceSkippingAnalyzer;
+import com.javax0.jdsl.analyzers.terminals.NumberAnalyzer;
+import com.javax0.jdsl.analyzers.terminals.TerminalSymbolAnalyzer;
+import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 import com.javax0.jdsl.executors.SimpleListExecutor;
+import com.javax0.jdsl.executors.SimpleListExecutorFactory;
 
 /**
  * This class is a singleton to ease the build of grammar. To use it you can
@@ -78,6 +80,10 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * when calling {@link #list(Analyzer...)} or
 	 * {@link #list(ListExecutor, Analyzer...)} because the
 	 * {@link NoExecutorListAnalyzer}s get flattened into the list.
+	 * <p>
+	 * Note that you can not use {@code or(kw("A","B"))} instead of
+	 * {@code or(kw("A"),kw("B"))}. Alternative analyzer does NOT flatten
+	 * keyword lists.
 	 * 
 	 * @param keywords
 	 * @return
@@ -99,9 +105,16 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * element can be defined later than it is used. This is needed when there
 	 * is some recursive (circular) definition in the grammar. (And usually
 	 * there is.)
+	 * <p>
+	 * The parameter {@code name} is only used in the debug logs when the
+	 * grammar is debugged.
 	 */
+	public final PassThroughAnalyzer definedLater(String name) {
+		return new PassThroughAnalyzer(name);
+	}
+
 	public final PassThroughAnalyzer definedLater() {
-		return new PassThroughAnalyzer();
+		return definedLater("noname");
 	}
 
 	private static void addAnalyzerFlattened(final ListAnalyzer listAnalyzer,
@@ -129,8 +142,8 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * effect as if the strings were used individually to define terminal
 	 * symbols.
 	 */
-	public final Analyzer list(ListExecutor listExecutor, Analyzer... analyzers) {
-		final ListAnalyzer listAnalyzer = new ListAnalyzer(listExecutor);
+	public final Analyzer list(Factory<ListExecutor> listExecutorFactory, Analyzer... analyzers) {
+		final ListAnalyzer listAnalyzer = new ListAnalyzer(listExecutorFactory);
 		listAnalyzer.setSkipAnalyzer(skippingAnalyzer);
 		for (Analyzer analyzer : analyzers) {
 			addAnalyzerFlattened(listAnalyzer, analyzer);
@@ -146,11 +159,11 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * nothing to execute in a list.
 	 */
 	public final Analyzer list(Analyzer... analyzers) {
-		return list(new SimpleListExecutor(), analyzers);
+		return list(SimpleListExecutorFactory.INSTANCE, analyzers);
 	}
 
 	/**
-	 * Creates an {@lin AlternativesAnalyzer} with the arguments as
+	 * Creates an {@link AlternativesAnalyzer} with the arguments as
 	 * alternatives.
 	 */
 	public final Analyzer or(Analyzer... analyzers) {

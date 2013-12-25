@@ -1,5 +1,11 @@
 package com.javax0.jdsl.analyzers;
 
+/**
+ * SourceCode implementation that has an underlying String.
+ * 
+ * @author Peter Verhas
+ * 
+ */
 public class StringSourceCode implements SourceCode {
 	public static final SourceCode EMPTY_SOURCE = new StringSourceCode("");
 

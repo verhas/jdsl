@@ -60,7 +60,7 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 		while (i < minRepetition) {
 			AnalysisResult result = analyzer.analyze(getInput());
 			if (!result.wasSuccessful()) {
-				return SimpleAnalysisResult.failed();
+				return SimpleAnalysisResult.failed(SequenceAnalyzer.class);
 			}
 			if (result.getExecutor() != null) {
 				executors.add(result.getExecutor());
@@ -71,7 +71,8 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 		while (maxRepetition == INFINITE || i < maxRepetition) {
 			AnalysisResult result = analyzer.analyze(getInput());
 			if (!result.wasSuccessful()) {
-				return SimpleAnalysisResult.success(getInput(), listExecutor);
+				return SimpleAnalysisResult.success(SequenceAnalyzer.class,
+						getInput(), listExecutor);
 			}
 			if (result.getExecutor() != null) {
 				executors.add(result.getExecutor());
@@ -79,6 +80,26 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 			setInput(result.remainingSourceCode());
 			i++;
 		}
-		return SimpleAnalysisResult.success(getInput(), listExecutor);
+		return SimpleAnalysisResult.success(SequenceAnalyzer.class, getInput(),
+				listExecutor);
+	}
+
+	@Override
+	public String toString() {
+		String repString = null;
+		if (minRepetition == 0 && maxRepetition == 1) {
+			repString = "?";
+		}
+		if (minRepetition == 0 && maxRepetition == -1) {
+			repString = "?";
+		}
+		if (minRepetition == 1 && maxRepetition == -1) {
+			repString = "+";
+		}
+		if (repString == null) {
+			repString = "{" + minRepetition + "," + maxRepetition + "}";
+		}
+		return analyzer.toString() + repString;
+
 	}
 }

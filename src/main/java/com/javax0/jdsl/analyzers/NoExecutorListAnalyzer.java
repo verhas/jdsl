@@ -15,13 +15,13 @@ import java.util.List;
  * is able to flatten it to a single list. This way
  * 
  * <pre>
- * is.list( kw("A","B") )
+ * list( kw("A","B"), kw("C") )
  * </pre>
  * 
  * will have the same result as
  * 
  * <pre>
- * is.list( kw("A"),kw("B") )
+ * list( kw("A"),kw("B"),kw("C") )
  * </pre>
  * 
  * @author Peter Verhas

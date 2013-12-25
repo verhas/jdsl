@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * An list executor that executes the elements of the list and then returns a
+ * A list executor that executes the elements of the list and then returns a
  * new list of the results. If there is only one non-null executor in the list
  * then the resulting list has only one element and then the element itself is
  * returned and not the list.
@@ -37,5 +37,4 @@ public class SimpleListExecutor implements ListExecutor {
 	public void setList(List<Executor> executorList) {
 		this.executorList = executorList;
 	}
-
 }

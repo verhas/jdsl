@@ -4,9 +4,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.javax0.jdsl.analyzers.AnalysisResult;
-import com.javax0.jdsl.analyzers.NumberAnalyzer;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.analyzers.StringSourceCode;
+import com.javax0.jdsl.analyzers.terminals.NumberAnalyzer;
 import com.javax0.jdsl.executors.Executor;
 
 public class NumberAnalyzerTest {

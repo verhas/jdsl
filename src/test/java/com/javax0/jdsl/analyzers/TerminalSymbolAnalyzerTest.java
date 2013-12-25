@@ -3,6 +3,8 @@ package com.javax0.jdsl.analyzers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.javax0.jdsl.analyzers.terminals.TerminalSymbolAnalyzer;
+
 public class TerminalSymbolAnalyzerTest {
 
 	@SuppressWarnings("unused")
