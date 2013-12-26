@@ -43,4 +43,11 @@ The first call `skipSpaces()` instructs the analyzer that spaces that separate k
 
 The analyzer `ifStatement` is a list of analyzers. When it matches some source code then it creates an `IfExecutor` class instance and the elements of the list will be used by the executor. The elements are also analyzers. `kw()` creates a terminal symbol analyzer that is a keyword or some string that has to be present in the source code as it is defined in the argument of the method `kw(keyword)`.
 
-The definition of 
+The definition of `ifStatement` is a list of the keywords `if`, the symbol `(`, then an expression, the symbol `)` then `}` and optionally `else{ expression }` at the end.
+
+The method `optional()` creates an analyzer that matches the underlying analyzers passed as arguments optionally. This means that this is not an error if there is no `else{expression}` part at the end of an `if` statement in our grammar.
+
+Now, after we have created the analyzer for the variable `ifStatement` we finally have to define the analyzer stored in the variable `expression`. This can be done because this analyzer is a special type `PassThroughAnalyzer` that has a method `define()` to define the meaning of the analyzer after it had been created.
+
+Finally the field `grammar` has to be assigned. This field is declared in the abstract class `GrammarDefinition` and it has to get a value in the method `define()`.
+

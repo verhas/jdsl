@@ -3,13 +3,12 @@ package com.javax0.jdsl.analyzers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.javax0.jdsl.analyzers.AnalysisResult;
-import com.javax0.jdsl.analyzers.SourceCode;
-import com.javax0.jdsl.analyzers.StringSourceCode;
 import com.javax0.jdsl.analyzers.terminals.NumberAnalyzer;
+import com.javax0.jdsl.executors.Context;
 import com.javax0.jdsl.executors.Executor;
 
 public class NumberAnalyzerTest {
+	private static final Context nullContext = null;
 
 	@SuppressWarnings("unused")
 	private void testLongReturnsValue(Long expected, String input) {
@@ -25,7 +24,7 @@ public class NumberAnalyzerTest {
 			final AnalysisResult result = ka.analyze(sc);
 			final Executor executor = result.getExecutor();
 			Assert.assertNotNull(executor);
-			actual = (Long) executor.execute();
+			actual = (Long) executor.execute(nullContext);
 		}
 		THEN: {
 			Assert.assertEquals(expected, actual);
@@ -105,7 +104,7 @@ public class NumberAnalyzerTest {
 			final AnalysisResult result = ka.analyze(sc);
 			final Executor executor = result.getExecutor();
 			Assert.assertNotNull(executor);
-			actual = (Double) executor.execute();
+			actual = (Double) executor.execute(nullContext);
 		}
 		THEN: {
 			Assert.assertEquals(expected, actual);
@@ -212,7 +211,7 @@ public class NumberAnalyzerTest {
 			Assert.assertFalse(result.wasSuccessful());
 		}
 	}
-	
+
 	@SuppressWarnings("unused")
 	@Test
 	public void given_ASignString_when_CallingAnalysis_then_Fails() {
@@ -222,7 +221,7 @@ public class NumberAnalyzerTest {
 			ka = new NumberAnalyzer();
 			sc = new StringSourceCode("+");
 		}
-		
+
 		final Double actual;
 		final AnalysisResult result;
 		WHEN: {

@@ -15,13 +15,13 @@ import java.util.List;
 public class SimpleListExecutor implements ListExecutor {
 
 	@Override
-	public Object execute() {
+	public Object execute(Context context) {
 		final List<Object> resultList = new LinkedList<>();
 		for (final Executor executor : executorList) {
 			if (executor == null) {
 				resultList.add(null);
 			} else {
-				resultList.add(executor.execute());
+				resultList.add(executor.execute(context));
 			}
 		}
 		if (resultList.size() == 1) {

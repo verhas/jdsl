@@ -11,6 +11,7 @@ import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
 import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
 import com.javax0.jdsl.analyzers.StringSourceCode;
+import com.javax0.jdsl.executors.Context;
 import com.javax0.jdsl.executors.Executor;
 import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
@@ -46,23 +47,23 @@ public class GrammarTest {
 		Long res;
 		result = myGrammar.analyze(new StringSourceCode("if(1){55}else{33}"));
 		LOG.debug(result.getExecutor().toString());
-		res = (Long) result.getExecutor().execute();
+		res = (Long) result.getExecutor().execute(null);
 		Assert.assertEquals((Long) 55L, res);
 
 		result = myGrammar.analyze(new StringSourceCode("if(0){55}else{33}"));
 		LOG.debug(result.getExecutor().toString());
-		res = (Long) result.getExecutor().execute();
+		res = (Long) result.getExecutor().execute(null);
 		Assert.assertEquals((Long) 33L, res);
 
 		result = myGrammar.analyze(new StringSourceCode("if(1){55}"));
 		LOG.debug(result.getExecutor().toString());
-		res = (Long) result.getExecutor().execute();
+		res = (Long) result.getExecutor().execute(null);
 		Assert.assertEquals((Long) 55L, res);
 
 		result = myGrammar.analyze(new StringSourceCode(
 				"if(1){if(0){1}else{55}}"));
 		LOG.debug(result.getExecutor().toString());
-		res = (Long) result.getExecutor().execute();
+		res = (Long) result.getExecutor().execute(null);
 		Assert.assertEquals((Long) 55L, res);
 
 	}
@@ -79,18 +80,18 @@ public class GrammarTest {
 	private static class IfExecutor implements ListExecutor {
 
 		@Override
-		public Object execute() {
-			final Object condition = executorList.get(0).execute();
+		public Object execute(Context context) {
+			final Object condition = executorList.get(0).execute(context);
 			final Long one = (Long) condition;
 			if (one != 0) {
 				if (executorList.size() > 1) {
-					return executorList.get(1).execute();
+					return executorList.get(1).execute(context);
 				} else {
 					return null;
 				}
 			} else {
 				if (executorList.size() > 2) {
-					return executorList.get(2).execute();
+					return executorList.get(2).execute(context);
 				} else {
 					return null;
 				}

@@ -19,7 +19,7 @@ public class TerminalSymbolExecutor<T> implements Executor {
 	}
 
 	@Override
-	public T execute() {
+	public T execute(Context context) {
 		return object;
 	}
 
