@@ -9,7 +9,7 @@ public class ReporterFactory {
 
 	public static Reporter getReporter() {
 		if (reporter == null) {
-			reporter = new LogReporter();
+			reporter = new NullReporter();
 		}
 		return reporter;
 	}

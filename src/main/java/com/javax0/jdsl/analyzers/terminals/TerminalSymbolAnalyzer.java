@@ -11,10 +11,36 @@ import com.javax0.jdsl.log.ReporterFactory;
 public class TerminalSymbolAnalyzer implements Analyzer {
 	private final Reporter reporter = ReporterFactory.getReporter();
 
+	public interface CharCompare {
+		boolean isEqual(char a, char b);
+
+		CharCompare caseSensitive = new CharCompare() {
+			@Override
+			public boolean isEqual(char a, char b) {
+				return a == b;
+			}
+		};
+		CharCompare caseInsensitive = new CharCompare() {
+			@Override
+			public boolean isEqual(char a, char b) {
+				return Character.toLowerCase(a) == Character.toLowerCase(b);
+			}
+		};
+
+	}
+
+	private final CharCompare charCompare;
+
 	private final String lexeme;
 
 	public TerminalSymbolAnalyzer(final String lexeme) {
 		this.lexeme = lexeme;
+		charCompare = CharCompare.caseSensitive;
+	}
+
+	public TerminalSymbolAnalyzer(final String lexeme, CharCompare charCompare) {
+		this.lexeme = lexeme;
+		this.charCompare = charCompare;
 	}
 
 	@Override
@@ -26,7 +52,7 @@ public class TerminalSymbolAnalyzer implements Analyzer {
 		}
 
 		for (int i = 0; i < lexeme.length(); i++) {
-			if (lexeme.charAt(i) != input.charAt(i)) {
+			if (!charCompare.isEqual(lexeme.charAt(i), input.charAt(i))) {
 				return SimpleAnalysisResult
 						.failed(TerminalSymbolAnalyzer.class);
 			}

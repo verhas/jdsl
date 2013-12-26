@@ -27,16 +27,13 @@ public class GrammarTest {
 			void define() {
 				ReporterFactory.setReporter(new NullReporter());
 				skipSpaces();
-				final PassThroughAnalyzer command = definedLater("command");
-				final PassThroughAnalyzer expression = definedLater("expression");
+				final PassThroughAnalyzer expression = definedLater();
 				final Analyzer ifStatement = list(new IfExecutorFactory(),
-						kw("if", "("), expression, kw(")", "{"), command,
-						kw("}"), optional(kw("else", "{"), command, kw("}")));
-				expression.define(number());
-				command.define(or(ifStatement, kw("A", ";"), kw("B", ";"),
-						list(number(), kw(";")),
-						list(kw("{"), many(command), kw("}"))));
-				grammar = many(command);
+						kw("if", "("), expression, kw(")", "{"), expression,
+						kw("}"), optional(kw("else", "{"), expression, kw("}")));
+				expression.define(or(ifStatement, number(),
+						list(kw("{"), many(expression), kw("}"))));
+				grammar = many(expression);
 			}
 		};
 		return myGrammar;
@@ -47,23 +44,23 @@ public class GrammarTest {
 		final Analyzer myGrammar = defineMyGrammar();
 		AnalysisResult result;
 		Long res;
-		result = myGrammar.analyze(new StringSourceCode("if(1){55;}else{33;}"));
+		result = myGrammar.analyze(new StringSourceCode("if(1){55}else{33}"));
 		LOG.debug(result.getExecutor().toString());
 		res = (Long) result.getExecutor().execute();
 		Assert.assertEquals((Long) 55L, res);
 
-		result = myGrammar.analyze(new StringSourceCode("if(0){55;}else{33;}"));
+		result = myGrammar.analyze(new StringSourceCode("if(0){55}else{33}"));
 		LOG.debug(result.getExecutor().toString());
 		res = (Long) result.getExecutor().execute();
 		Assert.assertEquals((Long) 33L, res);
 
-		result = myGrammar.analyze(new StringSourceCode("if(1){55;}"));
+		result = myGrammar.analyze(new StringSourceCode("if(1){55}"));
 		LOG.debug(result.getExecutor().toString());
 		res = (Long) result.getExecutor().execute();
 		Assert.assertEquals((Long) 55L, res);
 
 		result = myGrammar.analyze(new StringSourceCode(
-				"if(1){if(0){1;}else{55;}}"));
+				"if(1){if(0){1}else{55}}"));
 		LOG.debug(result.getExecutor().toString());
 		res = (Long) result.getExecutor().execute();
 		Assert.assertEquals((Long) 55L, res);

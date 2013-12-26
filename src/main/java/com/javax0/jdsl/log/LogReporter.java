@@ -49,6 +49,11 @@ public class LogReporter implements Reporter {
 		LogReporter.maxDebugChars = maxDebugChars;
 	}
 
+	private Logger getLogger(Class<?> klass){
+		String loggerName = String.format("%23s",klass.getSimpleName());
+		return LoggerFactory.getLogger(loggerName);
+	}
+	
 	private static String debugStringify(final SourceCode input) {
 		final String debug;
 		if (input == null) {
@@ -101,7 +106,7 @@ public class LogReporter implements Reporter {
 	 */
 	public void logStart(final Class<? extends Analyzer> klass,
 			final SourceCode input) {
-		final Logger log = LoggerFactory.getLogger(klass);
+		final Logger log = getLogger(klass);
 		log.debug(dotTabbing() + "Starting " + debugStringify(input));
 		incTab();
 	}
@@ -141,7 +146,7 @@ public class LogReporter implements Reporter {
 	 */
 	public void logStart(final Class<? extends Analyzer> klass,
 			final SourceCode input, final List<Analyzer> analyzerList) {
-		final Logger log = LoggerFactory.getLogger(klass);
+		final Logger log = getLogger(klass);
 		final String sep;
 		if (klass.isAssignableFrom(AlternativesAnalyzer.class)) {
 			sep = "|";
@@ -170,7 +175,7 @@ public class LogReporter implements Reporter {
 			final SourceCode input, final String message,
 			final Object... params) {
 		final String formattedMessage = String.format(message, params);
-		final Logger log = LoggerFactory.getLogger(klass);
+		final Logger log = getLogger(klass);
 		log.debug(dotTabbing() + "Starting " + formattedMessage + " "
 				+ debugStringify(input));
 		incTab();
@@ -183,18 +188,18 @@ public class LogReporter implements Reporter {
 	 *            the class of the analyzer that was successful.
 	 */
 	public void logSuccess(final Class<? extends Analyzer> klass) {
-		final Logger log = LoggerFactory.getLogger(klass);
-		log.debug(dotTabbing() + "success");
+		final Logger log = getLogger(klass);
 		decTab();
+		log.debug(dotTabbing() + "success");
 	}
 
 	/**
 	 * Same as {@link #logFail(Class)} also giving a reason message.
 	 */
 	public void logFail(final Class<?> klass, final String message) {
-		final Logger log = LoggerFactory.getLogger(klass);
-		log.debug(dotTabbing() + "fail " + message);
+		final Logger log = getLogger(klass);
 		decTab();
+		log.debug(dotTabbing() + "fail " + message);
 	}
 
 	/**
@@ -204,9 +209,8 @@ public class LogReporter implements Reporter {
 	 *            is the class of the analyzer that failed.
 	 */
 	public void logFail(final Class<? extends Analyzer> klass) {
-		final Logger log = LoggerFactory.getLogger(klass);
-		log.debug(dotTabbing() + "fail");
+		final Logger log = getLogger(klass);
 		decTab();
+		log.debug(dotTabbing() + "fail");
 	}
-
 }

@@ -9,6 +9,7 @@ import com.javax0.jdsl.analyzers.ListAnalyzer;
 import com.javax0.jdsl.analyzers.NoExecutorListAnalyzer;
 import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
 import com.javax0.jdsl.analyzers.SequenceAnalyzer;
+import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SkippingAnalyzer;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.analyzers.WhiteSpaceSkippingAnalyzer;
@@ -47,7 +48,12 @@ public abstract class GrammarDefinition implements Analyzer {
 			throw new IllegalArgumentException(
 					"'grammar' was not set in the grammar definition");
 		}
-		return grammar.analyze(input);
+		AnalysisResult result = grammar.analyze(input);
+		if (result.remainingSourceCode().length() > 0) {
+			result = SimpleAnalysisResult.failed(this.getClass(),
+					"there are trailing characters");
+		}
+		return result;
 	}
 
 	private SkippingAnalyzer skippingAnalyzer;
@@ -59,6 +65,12 @@ public abstract class GrammarDefinition implements Analyzer {
 
 	public final void skipSpaces() {
 		setSkippingAnalyzer(new WhiteSpaceSkippingAnalyzer());
+	}
+
+	private TerminalSymbolAnalyzer.CharCompare charCompare = TerminalSymbolAnalyzer.CharCompare.caseSensitive;
+
+	public final void caseInsensitive() {
+		charCompare = TerminalSymbolAnalyzer.CharCompare.caseInsensitive;
 	}
 
 	/**
@@ -85,18 +97,21 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * Note that you can not use {@code or(kw("A","B"))} instead of
 	 * {@code or(kw("A"),kw("B"))}. Alternative analyzer does NOT flatten
 	 * keyword lists.
+	 * <p>
+	 * Note that this version of themethod creates
+	 * {@link TerminalSymbolAnalyzer} that compares the keywords case sensitive.
+	 * If you want case insensitive keywords, then use
 	 * 
-	 * @param keywords
-	 * @return
 	 */
 	public final Analyzer kw(final String... keywords) {
 		if (keywords.length == 1) {
-			return new TerminalSymbolAnalyzer(keywords[0]);
+			return new TerminalSymbolAnalyzer(keywords[0], charCompare);
 		}
 		final ListAnalyzer keywordListAnalyzer = new NoExecutorListAnalyzer();
 		keywordListAnalyzer.setSkipAnalyzer(skippingAnalyzer);
 		for (final String keyword : keywords) {
-			keywordListAnalyzer.add(new TerminalSymbolAnalyzer(keyword));
+			keywordListAnalyzer.add(new TerminalSymbolAnalyzer(keyword,
+					charCompare));
 		}
 		return keywordListAnalyzer;
 	}
