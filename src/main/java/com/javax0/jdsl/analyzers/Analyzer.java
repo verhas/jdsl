@@ -10,5 +10,5 @@ public interface Analyzer {
 	 * Read the input, perform the analysis and return the result of the
 	 * analysis.
 	 */
-	AnalysisResult analyze(SourceCode input);
+	AnalysisResult analyze(final SourceCode input);
 }

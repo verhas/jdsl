@@ -10,5 +10,5 @@ import java.util.List;
  * 
  */
 public interface ListExecutor extends Executor {
-    void setList(List<Executor> executorList);
+	void setList(final List<Executor> executorList);
 }

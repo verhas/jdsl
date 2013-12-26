@@ -5,7 +5,8 @@ import com.javax0.jdsl.analyzers.Analyzer;
 import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.executors.TerminalSymbolExecutor;
-import com.javax0.jdsl.log.LogHelper;
+import com.javax0.jdsl.log.Reporter;
+import com.javax0.jdsl.log.ReporterFactory;
 
 /**
  * Analyzes an integer or floating point decimal number.
@@ -21,25 +22,26 @@ import com.javax0.jdsl.log.LogHelper;
  * 
  */
 public class NumberAnalyzer implements Analyzer {
+	private final Reporter reporter = ReporterFactory.getReporter();
 
-	private boolean isIndexInRange(int i, SourceCode input) {
+	private boolean isIndexInRange(final int i, final SourceCode input) {
 		return i < input.length();
 	}
 
-	private boolean isDigit(int i, SourceCode input) {
+	private boolean isDigit(final int i, final SourceCode input) {
 		return isIndexInRange(i, input) && Character.isDigit(input.charAt(i));
 	}
 
-	private boolean isSignChar(int i, SourceCode input) {
+	private boolean isSignChar(final int i, final SourceCode input) {
 		return isIndexInRange(i, input)
 				&& (input.charAt(i) == '+' || input.charAt(i) == '-');
 	}
 
-	private boolean isChar(int i, SourceCode input, char... chars) {
+	private boolean isChar(final int i, final SourceCode input, final char... chars) {
 		if (!isIndexInRange(i, input)) {
 			return false;
 		}
-		for (char ch : chars) {
+		for (final char ch : chars) {
 			if (input.charAt(i) == ch) {
 				return true;
 			}
@@ -48,8 +50,8 @@ public class NumberAnalyzer implements Analyzer {
 	}
 
 	@Override
-	public AnalysisResult analyze(SourceCode input) {
-		LogHelper.logStart(NumberAnalyzer.class, input);
+	public AnalysisResult analyze(final SourceCode input) {
+		reporter.logStart(NumberAnalyzer.class, input);
 		int i = 0;
 		long sig = 1;
 		if (isSignChar(i, input)) {
@@ -106,9 +108,9 @@ public class NumberAnalyzer implements Analyzer {
 			return SimpleAnalysisResult.failed(NumberAnalyzer.class);
 		}
 	}
-	
+
 	@Override
-	public String toString(){
-		return "NumberAnalyzer";
+	public String toString() {
+		return "number";
 	}
 }

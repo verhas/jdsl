@@ -1,11 +1,10 @@
 package com.javax0.jdsl.analyzers;
 
-import static com.javax0.jdsl.log.LogHelper.logStart;
-
 import java.util.LinkedList;
 import java.util.List;
 
-import com.javax0.jdsl.log.LogHelper;
+import com.javax0.jdsl.log.Reporter;
+import com.javax0.jdsl.log.ReporterFactory;
 
 /**
  * Implements an analyzer that accepts an input if one of the underlying
@@ -19,20 +18,21 @@ import com.javax0.jdsl.log.LogHelper;
  */
 public class AlternativesAnalyzer implements Analyzer {
 	private final List<Analyzer> analyzerList = new LinkedList<>();
+	private final Reporter reporter = ReporterFactory.getReporter();
 
-	public void add(Analyzer... analyzers) {
-		for (Analyzer analyzer : analyzers) {
+	public void add(final Analyzer... analyzers) {
+		for (final Analyzer analyzer : analyzers) {
 			analyzerList.add(analyzer);
 		}
 	}
 
 	@Override
-	public AnalysisResult analyze(SourceCode input) {
-		logStart(AlternativesAnalyzer.class, input, analyzerList);
-		for (Analyzer analyzer : analyzerList) {
-			AnalysisResult result = analyzer.analyze(input);
+	public AnalysisResult analyze(final SourceCode input) {
+		reporter.logStart(AlternativesAnalyzer.class, input, analyzerList);
+		for (final Analyzer analyzer : analyzerList) {
+			final AnalysisResult result = analyzer.analyze(input);
 			if (result.wasSuccessful()) {
-				LogHelper.logSuccess(AlternativesAnalyzer.class);
+				reporter.logSuccess(AlternativesAnalyzer.class);
 				return result;
 			}
 		}
@@ -41,6 +41,6 @@ public class AlternativesAnalyzer implements Analyzer {
 
 	@Override
 	public String toString() {
-		return "[" + LogHelper.toString(analyzerList, "|") + "]";
+		return "[" + reporter.toString(analyzerList, "|") + "]";
 	}
 }

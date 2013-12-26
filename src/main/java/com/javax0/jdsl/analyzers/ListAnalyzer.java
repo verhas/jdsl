@@ -6,7 +6,8 @@ import java.util.List;
 import com.javax0.jdsl.executors.Executor;
 import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
-import com.javax0.jdsl.log.LogHelper;
+import com.javax0.jdsl.log.Reporter;
+import com.javax0.jdsl.log.ReporterFactory;
 
 /**
  * Implements an analyzer that accepts a code if the underlying analyzers accept
@@ -19,7 +20,7 @@ import com.javax0.jdsl.log.LogHelper;
  * 
  */
 public class ListAnalyzer extends SpaceIgnoringAnalyzer {
-
+	private final Reporter reporter = ReporterFactory.getReporter();
 	private final List<Analyzer> analyzerList = new LinkedList<>();
 
 	protected List<Analyzer> getAnalyzerList() {
@@ -32,13 +33,11 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 	 * 
 	 * @param analyzers
 	 */
-	public void add(Analyzer... analyzers) {
-		for (Analyzer analyzer : analyzers) {
+	public void add(final Analyzer... analyzers) {
+		for (final Analyzer analyzer : analyzers) {
 			analyzerList.add(analyzer);
 		}
 	}
-
-	private final Factory<ListExecutor> listExecutorFactory;
 
 	/**
 	 * Set the executor that will be returned by the analysis. During the
@@ -47,28 +46,17 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 	 * 
 	 * @param listExecutor
 	 */
-	public ListAnalyzer(Factory<ListExecutor> listExecutorFactory) {
-		this.listExecutorFactory = listExecutorFactory;
-	}
-
-	private ListExecutor createExecutor(List<Executor> executors) {
-		final ListExecutor listExecutor;
-		if (listExecutorFactory != null) {
-			listExecutor = listExecutorFactory.get();
-			listExecutor.setList(executors);
-		} else {
-			listExecutor = null;
-		}
-		return listExecutor;
+	public ListAnalyzer(final Factory<ListExecutor> listExecutorFactory) {
+		super(listExecutorFactory);
 	}
 
 	@Override
 	public AnalysisResult analyze() {
-		LogHelper.logStart(ListAnalyzer.class, getInput(), analyzerList);
+		reporter.logStart(ListAnalyzer.class, getInput(), analyzerList);
 		final List<Executor> executors = new LinkedList<>();
 
-		for (Analyzer analyzer : analyzerList) {
-			AnalysisResult result = analyzer.analyze(getInput());
+		for (final Analyzer analyzer : analyzerList) {
+			final AnalysisResult result = analyzer.analyze(getInput());
 			if (!result.wasSuccessful()) {
 				return SimpleAnalysisResult.failed(ListAnalyzer.class);
 			}
@@ -84,6 +72,6 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 
 	@Override
 	public String toString() {
-		return "[" + LogHelper.toString(analyzerList, ",") + "]";
+		return "[" + reporter.toString(analyzerList, ",") + "]";
 	}
 }

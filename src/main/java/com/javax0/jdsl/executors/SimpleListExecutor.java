@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A list executor that executes the elements of the list and then returns a
- * new list of the results. If there is only one non-null executor in the list
- * then the resulting list has only one element and then the element itself is
+ * A list executor that executes the elements of the list and then returns a new
+ * list of the results. If there is only one non-null executor in the list then
+ * the resulting list has only one element and then the element itself is
  * returned and not the list.
  * 
  * @author Peter Verhas
@@ -17,7 +17,7 @@ public class SimpleListExecutor implements ListExecutor {
 	@Override
 	public Object execute() {
 		final List<Object> resultList = new LinkedList<>();
-		for (Executor executor : executorList) {
+		for (final Executor executor : executorList) {
 			if (executor == null) {
 				resultList.add(null);
 			} else {
@@ -34,7 +34,18 @@ public class SimpleListExecutor implements ListExecutor {
 	private List<Executor> executorList;
 
 	@Override
-	public void setList(List<Executor> executorList) {
+	public void setList(final List<Executor> executorList) {
 		this.executorList = executorList;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder representationBuilder = new StringBuilder();
+		representationBuilder.append("[");
+		for (final Executor executor : executorList) {
+			representationBuilder.append(executor.toString());
+		}
+		representationBuilder.append("]");
+		return representationBuilder.toString();
 	}
 }

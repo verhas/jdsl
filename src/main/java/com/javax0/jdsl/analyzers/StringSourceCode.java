@@ -11,7 +11,7 @@ public class StringSourceCode implements SourceCode {
 
 	private final String source;
 
-	public StringSourceCode(String source) {
+	public StringSourceCode(final String source) {
 		if (source == null) {
 			throw new IllegalArgumentException(
 					"source can not be noll when constructing StringSourceCode object");
@@ -20,7 +20,7 @@ public class StringSourceCode implements SourceCode {
 	}
 
 	@Override
-	public char charAt(int i) {
+	public char charAt(final int i) {
 		return source.charAt(i);
 	}
 
@@ -30,7 +30,7 @@ public class StringSourceCode implements SourceCode {
 	}
 
 	@Override
-	public SourceCode rest(int i) {
+	public SourceCode rest(final int i) {
 		final SourceCode result;
 		if (i < source.length()) {
 			if (i == 0) {
@@ -55,7 +55,7 @@ public class StringSourceCode implements SourceCode {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

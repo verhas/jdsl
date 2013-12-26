@@ -1,7 +1,7 @@
 package com.javax0.jdsl.analyzers;
 
 import com.javax0.jdsl.executors.Executor;
-import com.javax0.jdsl.log.LogHelper;
+import com.javax0.jdsl.log.ReporterFactory;
 
 /**
  * A simple implementation of the interface {@link AnalysisResult} that stores
@@ -19,8 +19,8 @@ public class SimpleAnalysisResult implements AnalysisResult {
 	private final SourceCode remaining;
 	private final Executor executor;
 
-	private SimpleAnalysisResult(boolean success, SourceCode remaining,
-			Executor executor) {
+	private SimpleAnalysisResult(final boolean success,
+			final SourceCode remaining, final Executor executor) {
 		this.success = success;
 		this.remaining = remaining;
 		this.executor = executor;
@@ -29,20 +29,22 @@ public class SimpleAnalysisResult implements AnalysisResult {
 	private static final SimpleAnalysisResult FAILED_RESULT = new SimpleAnalysisResult(
 			false, null, null);
 
-	public static SimpleAnalysisResult failed(Class<? extends Analyzer> klass) {
-		LogHelper.logFail(klass);
+	public static SimpleAnalysisResult failed(
+			final Class<? extends Analyzer> klass) {
+		ReporterFactory.getReporter().logFail(klass);
 		return FAILED_RESULT;
 	}
 
-	public static SimpleAnalysisResult failed(Class<? extends Analyzer> klass,
-			String reason) {
-		LogHelper.logFail(klass, reason);
+	public static SimpleAnalysisResult failed(
+			final Class<? extends Analyzer> klass, final String reason) {
+		ReporterFactory.getReporter().logFail(klass, reason);
 		return FAILED_RESULT;
 	}
 
-	public static SimpleAnalysisResult success(Class<? extends Analyzer> klass,
-			SourceCode in, Executor r) {
-		LogHelper.logSuccess(klass);
+	public static SimpleAnalysisResult success(
+			final Class<? extends Analyzer> klass, final SourceCode in,
+			final Executor r) {
+		ReporterFactory.getReporter().logSuccess(klass);
 		return new SimpleAnalysisResult(true, in, r);
 	}
 

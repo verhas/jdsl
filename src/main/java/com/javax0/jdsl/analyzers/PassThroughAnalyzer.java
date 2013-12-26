@@ -1,6 +1,7 @@
 package com.javax0.jdsl.analyzers;
 
-import com.javax0.jdsl.log.LogHelper;
+import com.javax0.jdsl.log.Reporter;
+import com.javax0.jdsl.log.ReporterFactory;
 
 /**
  * PassThroughAnalyzer only invokes the underlying analyzer. This is used to
@@ -10,32 +11,33 @@ import com.javax0.jdsl.log.LogHelper;
  * 
  */
 public class PassThroughAnalyzer implements Analyzer {
+	private final Reporter reporter = ReporterFactory.getReporter();
 
-	private String name;
+	private final String name;
 
-	public PassThroughAnalyzer(String name) {
+	public PassThroughAnalyzer(final String name) {
 		this.name = name;
 	}
 
 	private Analyzer underlyingAnalyzer;
 
-	public void define(Analyzer analyzer) {
+	public void define(final Analyzer analyzer) {
 		this.underlyingAnalyzer = analyzer;
 	}
 
 	@Override
-	public AnalysisResult analyze(SourceCode input) {
-		LogHelper.logStart(PassThroughAnalyzer.class, input);
+	public AnalysisResult analyze(final SourceCode input) {
+		reporter.logStart(PassThroughAnalyzer.class, input);
 		if (underlyingAnalyzer == null) {
 			throw new RuntimeException(
 					PassThroughAnalyzer.class.toString()
 							+ " can not analyze until the underlying analyzer was not set");
 		}
-		AnalysisResult result = underlyingAnalyzer.analyze(input);
+		final AnalysisResult result = underlyingAnalyzer.analyze(input);
 		if (result.wasSuccessful()) {
-			LogHelper.logSuccess(PassThroughAnalyzer.class);
+			reporter.logSuccess(PassThroughAnalyzer.class);
 		} else {
-			LogHelper.logFail(PassThroughAnalyzer.class);
+			reporter.logFail(PassThroughAnalyzer.class);
 		}
 		return result;
 	}

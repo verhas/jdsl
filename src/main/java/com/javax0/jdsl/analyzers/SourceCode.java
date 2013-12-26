@@ -13,19 +13,19 @@ package com.javax0.jdsl.analyzers;
  * 
  */
 public interface SourceCode {
-    /**
-     * Get the character at the position {@code i}. Indexing starts with zero.
-     */
-    char charAt(int i);
+	/**
+	 * Get the character at the position {@code i}. Indexing starts with zero.
+	 */
+	char charAt(final int i);
 
-    /**
-     * Get the number of characters that are available in the source code.
-     */
-    int length();
+	/**
+	 * Get the number of characters that are available in the source code.
+	 */
+	int length();
 
-    /**
-     * Get source code that represent the characters that follow the first
-     * {@code i} characters of the original ({@code this}) source code.
-     */
-    SourceCode rest(int i);
+	/**
+	 * Get source code that represent the characters that follow the first
+	 * {@code i} characters of the original ({@code this}) source code.
+	 */
+	SourceCode rest(final int i);
 }

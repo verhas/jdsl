@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.javax0.jdsl.executors.Executor;
+import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 
 /**
@@ -21,13 +22,14 @@ import com.javax0.jdsl.executors.ListExecutor;
  */
 public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 	private final Analyzer analyzer;
-	private final ListExecutor listExecutor;
 	private final int minRepetition;
 	private final int maxRepetition;
 	public static final int INFINITE = -1;
 
-	public SequenceAnalyzer(ListExecutor listExecutor, Analyzer analyzer,
-			int minRepetition, int maxRepetition) {
+	public SequenceAnalyzer(final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer analyzer, final int minRepetition,
+			final int maxRepetition) {
+		super(listExecutorFactory);
 		if (minRepetition < 0) {
 			throw new IllegalArgumentException("minRepetition is "
 					+ minRepetition + " should not be negative");
@@ -43,7 +45,6 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 							+ " can be -1 for infinite max, or can be larger than or equal to minRepetition "
 							+ minRepetition);
 		}
-		this.listExecutor = listExecutor;
 		this.analyzer = analyzer;
 		this.minRepetition = minRepetition;
 		this.maxRepetition = maxRepetition;
@@ -52,13 +53,10 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 	@Override
 	public AnalysisResult analyze() {
 		final List<Executor> executors = new LinkedList<>();
-		if (listExecutor != null) {
-			listExecutor.setList(executors);
-		}
 
 		int i = 0;
 		while (i < minRepetition) {
-			AnalysisResult result = analyzer.analyze(getInput());
+			final AnalysisResult result = analyzer.analyze(getInput());
 			if (!result.wasSuccessful()) {
 				return SimpleAnalysisResult.failed(SequenceAnalyzer.class);
 			}
@@ -69,10 +67,10 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 			i++;
 		}
 		while (maxRepetition == INFINITE || i < maxRepetition) {
-			AnalysisResult result = analyzer.analyze(getInput());
+			final AnalysisResult result = analyzer.analyze(getInput());
 			if (!result.wasSuccessful()) {
 				return SimpleAnalysisResult.success(SequenceAnalyzer.class,
-						getInput(), listExecutor);
+						getInput(), createExecutor(executors));
 			}
 			if (result.getExecutor() != null) {
 				executors.add(result.getExecutor());
@@ -81,7 +79,7 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 			i++;
 		}
 		return SimpleAnalysisResult.success(SequenceAnalyzer.class, getInput(),
-				listExecutor);
+				createExecutor(executors));
 	}
 
 	@Override

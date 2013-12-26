@@ -39,7 +39,7 @@ public abstract class GrammarDefinition implements Analyzer {
 
 	protected Analyzer grammar = null;
 
-	public final AnalysisResult analyze(SourceCode input) {
+	public final AnalysisResult analyze(final SourceCode input) {
 		if (grammar == null) {
 			define();
 		}
@@ -52,7 +52,8 @@ public abstract class GrammarDefinition implements Analyzer {
 
 	private SkippingAnalyzer skippingAnalyzer;
 
-	public final void setSkippingAnalyzer(SkippingAnalyzer skippingAnalyzer) {
+	public final void setSkippingAnalyzer(
+			final SkippingAnalyzer skippingAnalyzer) {
 		this.skippingAnalyzer = skippingAnalyzer;
 	}
 
@@ -88,13 +89,13 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * @param keywords
 	 * @return
 	 */
-	public final Analyzer kw(String... keywords) {
+	public final Analyzer kw(final String... keywords) {
 		if (keywords.length == 1) {
 			return new TerminalSymbolAnalyzer(keywords[0]);
 		}
-		ListAnalyzer keywordListAnalyzer = new NoExecutorListAnalyzer();
+		final ListAnalyzer keywordListAnalyzer = new NoExecutorListAnalyzer();
 		keywordListAnalyzer.setSkipAnalyzer(skippingAnalyzer);
-		for (String keyword : keywords) {
+		for (final String keyword : keywords) {
 			keywordListAnalyzer.add(new TerminalSymbolAnalyzer(keyword));
 		}
 		return keywordListAnalyzer;
@@ -109,7 +110,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * The parameter {@code name} is only used in the debug logs when the
 	 * grammar is debugged.
 	 */
-	public final PassThroughAnalyzer definedLater(String name) {
+	public final PassThroughAnalyzer definedLater(final String name) {
 		return new PassThroughAnalyzer(name);
 	}
 
@@ -120,7 +121,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	private static void addAnalyzerFlattened(final ListAnalyzer listAnalyzer,
 			final Analyzer analyzer) {
 		if (analyzer instanceof NoExecutorListAnalyzer) {
-			for (Analyzer subAnalyzer : ((NoExecutorListAnalyzer) analyzer)
+			for (final Analyzer subAnalyzer : ((NoExecutorListAnalyzer) analyzer)
 					.getAnalyzerList()) {
 				addAnalyzerFlattened(listAnalyzer, subAnalyzer);
 			}
@@ -142,10 +143,11 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * effect as if the strings were used individually to define terminal
 	 * symbols.
 	 */
-	public final Analyzer list(Factory<ListExecutor> listExecutorFactory, Analyzer... analyzers) {
+	public final Analyzer list(final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer... analyzers) {
 		final ListAnalyzer listAnalyzer = new ListAnalyzer(listExecutorFactory);
 		listAnalyzer.setSkipAnalyzer(skippingAnalyzer);
-		for (Analyzer analyzer : analyzers) {
+		for (final Analyzer analyzer : analyzers) {
 			addAnalyzerFlattened(listAnalyzer, analyzer);
 		}
 		return listAnalyzer;
@@ -158,7 +160,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * list should simply be executed one after the other, or when there is
 	 * nothing to execute in a list.
 	 */
-	public final Analyzer list(Analyzer... analyzers) {
+	public final Analyzer list(final Analyzer... analyzers) {
 		return list(SimpleListExecutorFactory.INSTANCE, analyzers);
 	}
 
@@ -166,8 +168,8 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * Creates an {@link AlternativesAnalyzer} with the arguments as
 	 * alternatives.
 	 */
-	public final Analyzer or(Analyzer... analyzers) {
-		AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
+	public final Analyzer or(final Analyzer... analyzers) {
+		final AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
 		alternativesAnalyzer.add(analyzers);
 		return alternativesAnalyzer;
 	}
@@ -177,16 +179,16 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * This means that the underlying analyzer need not be matched, or may be
 	 * matched once.
 	 */
-	public final Analyzer optional(ListExecutor listExecutor, Analyzer analyzer) {
-		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
-				analyzer, 0, 1);
-		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
-		return sequenceAnalyzer;
+	public final Analyzer optional(
+			final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer analyzer) {
+		return many(listExecutorFactory, analyzer, 0, 1);
 	}
 
-	public final Analyzer optional(ListExecutor listExecutor,
-			Analyzer... analyzers) {
-		return optional(listExecutor, list(analyzers));
+	public final Analyzer optional(
+			final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer... analyzers) {
+		return optional(listExecutorFactory, list(analyzers));
 	}
 
 	/**
@@ -194,47 +196,72 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * use an external executor, but rather creates a new
 	 * {@link SimpleListExecutor}.
 	 */
-	public final Analyzer optional(Analyzer analyzer) {
-		return optional(new SimpleListExecutor(), analyzer);
+	public final Analyzer optional(final Analyzer analyzer) {
+		return optional(SimpleListExecutorFactory.INSTANCE, analyzer);
 	}
 
-	public final Analyzer optional(Analyzer... analyzers) {
-		return optional(new SimpleListExecutor(), list(analyzers));
+	public final Analyzer optional(final Analyzer... analyzers) {
+		return optional(SimpleListExecutorFactory.INSTANCE, analyzers);
 	}
 
-	public final Analyzer many(ListExecutor listExecutor, Analyzer analyzer,
-			int min, int max) {
-		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
-				analyzer, 1, -1);
+	/**
+	 * Creates a sequence analyzer that uses the {@code analyzer} to at least
+	 * {@code min} and at most {@code max} times. Each time the analyzer is
+	 * successful it creates a new {@link ListExecutor} using the
+	 * {@code listExecutorFactory}.
+	 */
+	public final Analyzer many(final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer analyzer, final int min, final int max) {
+		final SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(
+				listExecutorFactory, analyzer, min, max);
 		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
 		return sequenceAnalyzer;
 	}
 
-	public final Analyzer many(Analyzer analyzer, int min, int max) {
-		return many(new SimpleListExecutor(), analyzer);
+	/**
+	 * Same as {@link #many(Factory, Analyzer, int, int)} but it does not accept
+	 * any factory. Instead it uses a {@link SimpleListExecutorFactory}.
+	 */
+	public final Analyzer many(final Analyzer analyzer, final int min,
+			final int max) {
+		return many(SimpleListExecutorFactory.INSTANCE, analyzer, min, max);
 	}
 
-	public final Analyzer manyOptional(ListExecutor listExecutor,
-			Analyzer analyzer) {
-		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
-				analyzer, 0, INFINITE);
-		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
-		return sequenceAnalyzer;
+	/**
+	 * Creates a sequence analyzer that analyzes zero or more times. On the
+	 * argument see {@link #many(Factory, Analyzer, int, int)} with {@code min}
+	 * and {@code max} set to zero, and infinite.
+	 */
+	public final Analyzer manyOptional(
+			final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer analyzer) {
+		return many(listExecutorFactory, analyzer, 0, INFINITE);
 	}
 
-	public final Analyzer manyOptional(Analyzer analyzer) {
-		return manyOptional(new SimpleListExecutor(), analyzer);
+	/**
+	 * Same as {@link #manyOptional(Factory, Analyzer)} but it does not accept
+	 * any factory. Instead it uses a {@link SimpleListExecutorFactory}.
+	 */
+	public final Analyzer manyOptional(final Analyzer analyzer) {
+		return manyOptional(new SimpleListExecutorFactory(), analyzer);
 	}
 
-	public final Analyzer many(ListExecutor listExecutor, Analyzer analyzer) {
-		SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(listExecutor,
-				analyzer, 1, INFINITE);
-		sequenceAnalyzer.setSkipAnalyzer(skippingAnalyzer);
-		return sequenceAnalyzer;
+	/**
+	 * Same as {@link #manyOptional(Factory, Analyzer)} but the {@code min}
+	 * value is one instead of zero. This means that the structure to be
+	 * analyzed by the {@code analyzer} has to be present at least once.
+	 */
+	public final Analyzer many(final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer analyzer) {
+		return many(listExecutorFactory, analyzer, 1, INFINITE);
 	}
 
-	public final Analyzer many(Analyzer analyzer) {
-		return many(new SimpleListExecutor(), analyzer);
+	/**
+	 * Same as {@link #many(Factory, Analyzer)} but uses the
+	 * {@link SimpleListExecutorFactory}.
+	 */
+	public final Analyzer many(final Analyzer analyzer) {
+		return many(SimpleListExecutorFactory.INSTANCE, analyzer);
 	}
 
 	public final Analyzer number() {

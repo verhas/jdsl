@@ -6,10 +6,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 
 public class SequenceAnalyzerTest {
 
+	final static Factory<ListExecutor> noExecutorFactory = null;
 	final static ListExecutor noExecutor = null;
 	final static SourceCode noSourceCode = null;
 	final static int optionalMin = 0;
@@ -19,7 +21,7 @@ public class SequenceAnalyzerTest {
 	@Test
 	public void given_SequenceAnalyzerZeroOne_when_AnalyzingAndThereIsNone_then_AcceptsTheInput() {
 		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutor,
+		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
 				underlyingAnalyzer, optionalMin, optionalMax);
 		final SourceCode sc = new StringSourceCode("");
 		GIVEN: {
@@ -40,7 +42,7 @@ public class SequenceAnalyzerTest {
 	@Test
 	public void given_SequenceAnalyzerZeroOne_when_AnalyzingAndThereIsNone_then_ReturnsTheInputUnchanged() {
 		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutor,
+		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
 				underlyingAnalyzer, optionalMin, optionalMax);
 		final SourceCode sc = new StringSourceCode("");
 		GIVEN: {
@@ -61,7 +63,7 @@ public class SequenceAnalyzerTest {
 	@Test
 	public void given_SequenceAnalyzerOptional_when_AnalyzingAndThereIsOne_then_AcceptsTheResult() {
 		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutor,
+		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
 				underlyingAnalyzer, optionalMin, optionalMax);
 		final SourceCode sc = new StringSourceCode("");
 		final SourceCode modified = new StringSourceCode("");
@@ -84,7 +86,7 @@ public class SequenceAnalyzerTest {
 	@Test
 	public void given_SequenceAnalyzerOptional_when_AnalyzingAndThereIsOne_then_ReturnsTheInputModified() {
 		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutor,
+		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
 				underlyingAnalyzer, optionalMin, optionalMax);
 		final SourceCode sc = new StringSourceCode("");
 		final SourceCode modified = new StringSourceCode("");
@@ -110,7 +112,7 @@ public class SequenceAnalyzerTest {
 		final SourceCode sc;
 		GIVEN: {
 			underlyingAnalyzer = successNTimesThenFail(loop);
-			analyzer = new SequenceAnalyzer(noExecutor, underlyingAnalyzer,
+			analyzer = new SequenceAnalyzer(noExecutorFactory, underlyingAnalyzer,
 					min, max);
 			sc = new StringSourceCode("");
 		}

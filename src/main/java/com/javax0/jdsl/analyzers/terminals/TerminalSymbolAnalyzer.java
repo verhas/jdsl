@@ -5,9 +5,12 @@ import com.javax0.jdsl.analyzers.Analyzer;
 import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.executors.Executor;
-import com.javax0.jdsl.log.LogHelper;
+import com.javax0.jdsl.log.Reporter;
+import com.javax0.jdsl.log.ReporterFactory;
 
 public class TerminalSymbolAnalyzer implements Analyzer {
+	private final Reporter reporter = ReporterFactory.getReporter();
+
 	private final String lexeme;
 
 	public TerminalSymbolAnalyzer(final String lexeme) {
@@ -16,7 +19,7 @@ public class TerminalSymbolAnalyzer implements Analyzer {
 
 	@Override
 	public AnalysisResult analyze(final SourceCode input) {
-		LogHelper.logStart(TerminalSymbolAnalyzer.class, input, "%s?", lexeme);
+		reporter.logStart(TerminalSymbolAnalyzer.class, input, "%s?", lexeme);
 		if (lexeme.length() > input.length()) {
 			return SimpleAnalysisResult.failed(TerminalSymbolAnalyzer.class,
 					"input short");

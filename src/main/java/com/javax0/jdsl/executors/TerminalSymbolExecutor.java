@@ -1,6 +1,5 @@
 package com.javax0.jdsl.executors;
 
-
 /**
  * Terminal symbols do not have much to calculate when they are executed. They
  * are represented by some Java object, like a {@code Long}, {@code Double} that
@@ -13,14 +12,25 @@ package com.javax0.jdsl.executors;
  * @author Peter Verhas
  */
 public class TerminalSymbolExecutor<T> implements Executor {
-    private final T object;
+	private final T object;
 
-    public TerminalSymbolExecutor(T object) {
-        this.object = object;
-    }
+	public TerminalSymbolExecutor(final T object) {
+		this.object = object;
+	}
 
-    @Override
-    public T execute() {
-        return object;
-    }
+	@Override
+	public T execute() {
+		return object;
+	}
+
+	@Override
+	public String toString() {
+		final String representation;
+		if (object instanceof Number) {
+			representation = object.toString();
+		} else {
+			representation = "\"" + object.toString() + "\"";
+		}
+		return representation;
+	}
 }

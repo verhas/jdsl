@@ -24,7 +24,7 @@ import com.javax0.jdsl.analyzers.SourceCode;
  * @author Peter Verhas
  * 
  */
-public class LogHelper {
+public class LogReporter implements Reporter {
 
 	private static final ThreadLocal<Integer> logTabSize = new ThreadLocal<Integer>() {
 
@@ -45,11 +45,11 @@ public class LogHelper {
 	 * are more than {@code maxDebugChars} in the input then elipsis {@code ...}
 	 * is appended on the display.
 	 */
-	public static void setMaxDebugChars(int maxDebugChars) {
-		LogHelper.maxDebugChars = maxDebugChars;
+	public static void setMaxDebugChars(final int maxDebugChars) {
+		LogReporter.maxDebugChars = maxDebugChars;
 	}
 
-	private static String debugStringify(SourceCode input) {
+	private static String debugStringify(final SourceCode input) {
 		final String debug;
 		if (input == null) {
 			debug = null;
@@ -67,7 +67,7 @@ public class LogHelper {
 	private static String dotTabbing() {
 		final int tabSize = logTabSize.get();
 		if (tabSize > 0) {
-			StringBuilder sb = new StringBuilder(tabSize);
+			final StringBuilder sb = new StringBuilder(tabSize);
 			for (int i = 0; i < tabSize; i++) {
 				sb.append(".");
 			}
@@ -77,7 +77,7 @@ public class LogHelper {
 		}
 	}
 
-	private static void modifyTab(int diff) {
+	private static void modifyTab(final int diff) {
 		int tabSize = logTabSize.get() + diff;
 		if (tabSize < 0) {
 			tabSize = 0;
@@ -99,8 +99,8 @@ public class LogHelper {
 	 * @param LOG
 	 * @param input
 	 */
-	public static void logStart(Class<? extends Analyzer> klass,
-			SourceCode input) {
+	public void logStart(final Class<? extends Analyzer> klass,
+			final SourceCode input) {
 		final Logger log = LoggerFactory.getLogger(klass);
 		log.debug(dotTabbing() + "Starting " + debugStringify(input));
 		incTab();
@@ -116,9 +116,10 @@ public class LogHelper {
 	 *            is the separator character, {@code ,} when this is a list and
 	 *            {@code |} when the list is used by an alternatives analyzer.
 	 */
-	public static String toString(List<Analyzer> analyzerList, String sepChar) {
-		StringBuilder sb = new StringBuilder(analyzerList.size() * 12);
-		for (Analyzer analyzer : analyzerList) {
+	public String toString(final List<Analyzer> analyzerList,
+			final String sepChar) {
+		final StringBuilder sb = new StringBuilder(analyzerList.size() * 12);
+		for (final Analyzer analyzer : analyzerList) {
 			if (sb.length() > 0) {
 				sb.append(sepChar);
 			}
@@ -138,8 +139,8 @@ public class LogHelper {
 	 *            is the underlying analyzer of a list analyzer or alternatives
 	 *            analyzer.
 	 */
-	public static void logStart(Class<? extends Analyzer> klass,
-			SourceCode input, List<Analyzer> analyzerList) {
+	public void logStart(final Class<? extends Analyzer> klass,
+			final SourceCode input, final List<Analyzer> analyzerList) {
 		final Logger log = LoggerFactory.getLogger(klass);
 		final String sep;
 		if (klass.isAssignableFrom(AlternativesAnalyzer.class)) {
@@ -165,8 +166,9 @@ public class LogHelper {
 	 * @param params
 	 *            parameters used to format the message.
 	 */
-	public static void logStart(Class<? extends Analyzer> klass,
-			SourceCode input, String message, Object... params) {
+	public void logStart(final Class<? extends Analyzer> klass,
+			final SourceCode input, final String message,
+			final Object... params) {
 		final String formattedMessage = String.format(message, params);
 		final Logger log = LoggerFactory.getLogger(klass);
 		log.debug(dotTabbing() + "Starting " + formattedMessage + " "
@@ -180,7 +182,7 @@ public class LogHelper {
 	 * @param klass
 	 *            the class of the analyzer that was successful.
 	 */
-	public static void logSuccess(Class<? extends Analyzer> klass) {
+	public void logSuccess(final Class<? extends Analyzer> klass) {
 		final Logger log = LoggerFactory.getLogger(klass);
 		log.debug(dotTabbing() + "success");
 		decTab();
@@ -189,7 +191,7 @@ public class LogHelper {
 	/**
 	 * Same as {@link #logFail(Class)} also giving a reason message.
 	 */
-	public static void logFail(Class<?> klass, String message) {
+	public void logFail(final Class<?> klass, final String message) {
 		final Logger log = LoggerFactory.getLogger(klass);
 		log.debug(dotTabbing() + "fail " + message);
 		decTab();
@@ -201,7 +203,7 @@ public class LogHelper {
 	 * @param klass
 	 *            is the class of the analyzer that failed.
 	 */
-	public static void logFail(Class<? extends Analyzer> klass) {
+	public void logFail(final Class<? extends Analyzer> klass) {
 		final Logger log = LoggerFactory.getLogger(klass);
 		log.debug(dotTabbing() + "fail");
 		decTab();
