@@ -17,7 +17,7 @@ import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 import com.javax0.jdsl.log.NullReporter;
 import com.javax0.jdsl.log.ReporterFactory;
-
+import static com.javax0.jdsl.analyzers.terminals.NumberAnalyzer.number;
 public class GrammarTest {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(GrammarTest.class);
@@ -43,11 +43,11 @@ public class GrammarTest {
 	@Test
 	public void given_SimpleGrammarAndMatchingSource_when_Analyzing_then_Success() {
 		final Analyzer myGrammar = defineMyGrammar();
-		AnalysisResult result;
-		Long res;
-		result = myGrammar.analyze(new StringSourceCode("if(1){55}else{33}"));
+		AnalysisResult result = myGrammar.analyze(new StringSourceCode(
+				"if(1){55}else{33}"));
+		Assert.assertTrue(result.wasSuccessful());
 		LOG.debug(result.getExecutor().toString());
-		res = (Long) result.getExecutor().execute(null);
+		Long res = (Long) result.getExecutor().execute(null);
 		Assert.assertEquals((Long) 55L, res);
 
 		result = myGrammar.analyze(new StringSourceCode("if(0){55}else{33}"));

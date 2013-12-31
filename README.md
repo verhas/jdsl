@@ -51,3 +51,18 @@ Now, after we have created the analyzer for the variable `ifStatement` we finall
 
 Finally the field `grammar` has to be assigned. This field is declared in the abstract class `GrammarDefinition` and it has to get a value in the method `define()`.
 
+The code using the method above can use the returned grammar:
+
+```
+		final Analyzer myGrammar = defineMyGrammar();
+		AnalysisResult result = myGrammar.analyze(new StringSourceCode(
+				"if(1){55}else{33}"));
+		Assert.assertTrue(result.wasSuccessful());
+		LOG.debug(result.getExecutor().toString());
+		Long res = (Long) result.getExecutor().execute(null);
+		Assert.assertEquals((Long) 55L, res);
+```
+
+The source code is provided in a String. The readily available implementation of the interface `SourceCode` used by the analyzers implements the methods of the interface using an embedded string. The method `analyze()` analyzes the source code and returns the result of the analysis. The analysis can be successful or not. This can be checked calling the method `wasSuccessful()`. If the analysis failed, it means that the source code was not matching the grammar. In that case there is no executor created by the analysis. If the analysis was successful then an executor is created and can be invoked (one or more times) to execute the code.
+
+The executor provides a method `execute()` that accept a single argument, which is an execution context. The execution context is an empty interface defined by the library and is not used by itself. You can pass any object as an execution context to the executors you implement.

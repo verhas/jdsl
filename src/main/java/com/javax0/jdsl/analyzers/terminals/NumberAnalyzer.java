@@ -108,7 +108,9 @@ public class NumberAnalyzer implements Analyzer {
 			return SimpleAnalysisResult.failed(NumberAnalyzer.class);
 		}
 	}
-
+	public static final Analyzer number() {
+		return new NumberAnalyzer();
+	}
 	@Override
 	public String toString() {
 		return "number";

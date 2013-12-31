@@ -279,7 +279,4 @@ public abstract class GrammarDefinition implements Analyzer {
 		return many(SimpleListExecutorFactory.INSTANCE, analyzer);
 	}
 
-	public final Analyzer number() {
-		return new NumberAnalyzer();
-	}
 }
