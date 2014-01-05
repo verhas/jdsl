@@ -1,0 +1,8 @@
+jDSL-DL, the Java Domain Specific Language Development Library
+--------------------------------------------------------------
+
+jDSL-DL is a library that can help you to create Domain Specific Language without any external tool or precompilation.
+Using the library you can define the grammar using Java API via easy to read and expressive fluent method calls. The
+defined grammar (object) can be used to analyze the source code of the domain specific program and the result of the
+analysis is an executor object that you can use to execute the instructions.
+
