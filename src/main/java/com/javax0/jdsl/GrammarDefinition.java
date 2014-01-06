@@ -148,6 +148,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	public final PassThroughAnalyzer later(final String name) {
 		final PassThroughAnalyzer delayedDefinitionAnalyzer = new PassThroughAnalyzer(
 				name);
+		delayedDefinitionAnalyzers.add(delayedDefinitionAnalyzer);
 		return delayedDefinitionAnalyzer;
 	}
 

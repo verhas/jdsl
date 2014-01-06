@@ -19,6 +19,7 @@ import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 import com.javax0.jdsl.log.NullReporter;
 import com.javax0.jdsl.log.ReporterFactory;
+
 public class GrammarTest {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(GrammarTest.class);
@@ -67,6 +68,48 @@ public class GrammarTest {
 		res = (Long) result.getExecutor().execute(null);
 		Assert.assertEquals((Long) 55L, res);
 
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = RuntimeException.class)
+	public void given_BadGRammarDefinition_when_Analyzing_then_ThrowsRunTimeException() {
+		final Analyzer myGrammar;
+		GIVEN: {
+			myGrammar = new GrammarDefinition() {
+				@Override
+				final Analyzer define() {
+					ReporterFactory.setReporter(new NullReporter());
+					final Define expression = later();
+					return expression;
+				}
+			};
+		}
+		WHEN: {
+			myGrammar.analyze(new StringSourceCode("anything"));
+		}
+		THEN: {
+		}
+	}
+
+	@SuppressWarnings("unused")
+	@Test(expected = IllegalArgumentException.class)
+	public void given_BadGRammarDefinition_when_Analyzing_then_ThrowsIllegalArgumentException() {
+		final Analyzer myGrammar;
+		GIVEN: {
+			myGrammar = new GrammarDefinition() {
+				@Override
+				final Analyzer define() {
+					ReporterFactory.setReporter(new NullReporter());
+					final Define expression = later();
+					return many(kw("k"));
+				}
+			};
+		}
+		WHEN: {
+			myGrammar.analyze(new StringSourceCode("anything"));
+		}
+		THEN: {
+		}
 	}
 
 	private static class IfExecutorFactory implements Factory<ListExecutor> {
