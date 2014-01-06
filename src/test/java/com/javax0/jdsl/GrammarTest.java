@@ -1,5 +1,7 @@
 package com.javax0.jdsl;
 
+import static com.javax0.jdsl.analyzers.terminals.NumberAnalyzer.number;
+
 import java.util.List;
 
 import org.junit.Assert;
@@ -9,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
-import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
+import com.javax0.jdsl.analyzers.Define;
 import com.javax0.jdsl.analyzers.StringSourceCode;
 import com.javax0.jdsl.executors.Context;
 import com.javax0.jdsl.executors.Executor;
@@ -17,7 +19,6 @@ import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 import com.javax0.jdsl.log.NullReporter;
 import com.javax0.jdsl.log.ReporterFactory;
-import static com.javax0.jdsl.analyzers.terminals.NumberAnalyzer.number;
 public class GrammarTest {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(GrammarTest.class);
@@ -25,16 +26,16 @@ public class GrammarTest {
 	private Analyzer defineMyGrammar() {
 		final Analyzer myGrammar = new GrammarDefinition() {
 			@Override
-			void define() {
+			final Analyzer define() {
 				ReporterFactory.setReporter(new NullReporter());
 				skipSpaces();
-				final PassThroughAnalyzer expression = definedLater();
+				final Define expression = later();
 				final Analyzer ifStatement = list(new IfExecutorFactory(),
 						kw("if", "("), expression, kw(")", "{"), expression,
 						kw("}"), optional(kw("else", "{"), expression, kw("}")));
 				expression.define(or(ifStatement, number(),
 						list(kw("{"), many(expression), kw("}"))));
-				grammar = many(expression);
+				return many(expression);
 			}
 		};
 		return myGrammar;

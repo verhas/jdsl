@@ -19,22 +19,20 @@ Using jdsl you define the grammar in Java using fluent API. When you have your g
 The easiest and recommended way defining a grammar for the above is 
 
 ```
-	private Analyzer defineMyGrammar() {
 		final Analyzer myGrammar = new GrammarDefinition() {
 			@Override
-			void define() {
+			final Analyzer define() {
+				ReporterFactory.setReporter(new NullReporter());
 				skipSpaces();
-				final PassThroughAnalyzer expression = definedLater();
+				final Define expression = later();
 				final Analyzer ifStatement = list(new IfExecutorFactory(),
 						kw("if", "("), expression, kw(")", "{"), expression,
 						kw("}"), optional(kw("else", "{"), expression, kw("}")));
 				expression.define(or(ifStatement, number(),
 						list(kw("{"), many(expression), kw("}"))));
-				grammar = many(expression);
+				return many(expression);
 			}
 		};
-		return myGrammar;
-	}
 ```
   
 to create a `GrammarDefinition`. The class `GrammarDefinition` is an abstract one and  creating a concrete extension of it has to define the method `define()`. The methods defined in the class `GrammarDefinition` can be used as in the example above to describe the grammar that the analyzer will analyze.

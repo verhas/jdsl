@@ -10,7 +10,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * @author Peter Verhas
  * 
  */
-public class PassThroughAnalyzer implements Analyzer {
+public class PassThroughAnalyzer implements Define {
 	private final Reporter reporter = ReporterFactory.getReporter();
 
 	private final String name;
@@ -19,9 +19,18 @@ public class PassThroughAnalyzer implements Analyzer {
 		this.name = name;
 	}
 
-	private Analyzer underlyingAnalyzer;
+	private Analyzer underlyingAnalyzer = null;
+
+	public boolean isDefined() {
+		return underlyingAnalyzer != null;
+	}
 
 	public void define(final Analyzer analyzer) {
+		if (analyzer == null) {
+			throw new IllegalArgumentException(
+					PassThroughAnalyzer.class.getName()
+							+ ".define(null) is invalid");
+		}
 		this.underlyingAnalyzer = analyzer;
 	}
 

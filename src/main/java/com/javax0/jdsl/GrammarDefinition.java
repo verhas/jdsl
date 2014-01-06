@@ -2,6 +2,9 @@ package com.javax0.jdsl;
 
 import static com.javax0.jdsl.analyzers.SequenceAnalyzer.INFINITE;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.javax0.jdsl.analyzers.AlternativesAnalyzer;
 import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
@@ -13,7 +16,6 @@ import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SkippingAnalyzer;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.analyzers.WhiteSpaceSkippingAnalyzer;
-import com.javax0.jdsl.analyzers.terminals.NumberAnalyzer;
 import com.javax0.jdsl.analyzers.terminals.TerminalSymbolAnalyzer;
 import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
@@ -36,18 +38,36 @@ import com.javax0.jdsl.executors.SimpleListExecutorFactory;
  */
 public abstract class GrammarDefinition implements Analyzer {
 
-	abstract void define();
+	abstract Analyzer define();
 
-	protected Analyzer grammar = null;
+	private Analyzer grammar = null;
+	private List<PassThroughAnalyzer> delayedDefinitionAnalyzers = new LinkedList<>();
+
+	private void assertAllDelayedAnalyzersAreDefined() {
+		boolean failed = false;
+		StringBuilder sb = new StringBuilder();
+		for (PassThroughAnalyzer pta : delayedDefinitionAnalyzers) {
+			if (!pta.isDefined()) {
+				failed = true;
+				sb.append(pta.toString()).append("\n");
+			}
+		}
+		if (failed) {
+			throw new IllegalArgumentException(
+					"Delayed defined analyzer(s) were not defined: "
+							+ sb.toString());
+		}
+	}
 
 	public final AnalysisResult analyze(final SourceCode input) {
 		if (grammar == null) {
-			define();
+			grammar = define();
 		}
 		if (grammar == null) {
 			throw new IllegalArgumentException(
 					"'grammar' was not set in the grammar definition");
 		}
+		assertAllDelayedAnalyzersAreDefined();
 		AnalysisResult result = grammar.analyze(input);
 		if (result.remainingSourceCode().length() > 0) {
 			result = SimpleAnalysisResult.failed(this.getClass(),
@@ -125,12 +145,14 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * The parameter {@code name} is only used in the debug logs when the
 	 * grammar is debugged.
 	 */
-	public final PassThroughAnalyzer definedLater(final String name) {
-		return new PassThroughAnalyzer(name);
+	public final PassThroughAnalyzer later(final String name) {
+		final PassThroughAnalyzer delayedDefinitionAnalyzer = new PassThroughAnalyzer(
+				name);
+		return delayedDefinitionAnalyzer;
 	}
 
-	public final PassThroughAnalyzer definedLater() {
-		return definedLater("noname");
+	public final PassThroughAnalyzer later() {
+		return later("noname");
 	}
 
 	private static void addAnalyzerFlattened(final ListAnalyzer listAnalyzer,
