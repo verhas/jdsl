@@ -1,0 +1,24 @@
+-classpath
+'/Users/verhasp/github/jdsl/target/classes:/Users/verhasp/.m2/repository/ch/qos/logback/logback-core/1.0.13/logback-core-1.0.13.jar:/Users/verhasp/.m2/repository/ch/qos/logback/logback-classic/1.0.13/logback-classic-1.0.13.jar:/Users/verhasp/.m2/repository/org/jooq/jooq/3.2.0/jooq-3.2.0.jar:/Users/verhasp/.m2/repository/org/jooq/jooq-meta/3.2.0/jooq-meta-3.2.0.jar:/Users/verhasp/.m2/repository/org/jooq/jooq-codegen/3.2.0/jooq-codegen-3.2.0.jar:/Users/verhasp/.m2/repository/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/Users/verhasp/github/jdsl/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2014. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/verhasp/github/jdsl/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'jdsl 1.0.0-SNAPSHOT API'
+-link
+'http://java.sun.com/javase/6/docs/api'
+-use
+-version
+-windowtitle
+'jdsl 1.0.0-SNAPSHOT API'
