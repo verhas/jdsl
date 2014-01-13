@@ -16,7 +16,7 @@ import com.javax0.jdsl.executors.SimpleListExecutor;
  * @author Peter Verhas
  * 
  */
-public abstract class SpaceIgnoringAnalyzer implements Analyzer {
+public abstract class SpaceIgnoringAnalyzer implements Rule {
 	private SkippingAnalyzer skippingAnalyzer = null;
 
 	public void setSkipAnalyzer(final SkippingAnalyzer skipAnalyzer) {

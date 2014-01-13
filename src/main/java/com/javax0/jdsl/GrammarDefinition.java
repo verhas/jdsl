@@ -8,9 +8,11 @@ import java.util.List;
 import com.javax0.jdsl.analyzers.AlternativesAnalyzer;
 import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
+import com.javax0.jdsl.analyzers.Define;
 import com.javax0.jdsl.analyzers.ListAnalyzer;
 import com.javax0.jdsl.analyzers.NoExecutorListAnalyzer;
 import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
+import com.javax0.jdsl.analyzers.Rule;
 import com.javax0.jdsl.analyzers.SequenceAnalyzer;
 import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SkippingAnalyzer;
@@ -18,27 +20,55 @@ import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.analyzers.WhiteSpaceSkippingAnalyzer;
 import com.javax0.jdsl.analyzers.terminals.TerminalSymbolAnalyzer;
 import com.javax0.jdsl.executors.Factory;
+import com.javax0.jdsl.executors.FactoryFactory;
 import com.javax0.jdsl.executors.ListExecutor;
 import com.javax0.jdsl.executors.SimpleListExecutor;
 import com.javax0.jdsl.executors.SimpleListExecutorFactory;
 
 /**
  * This class is a singleton to ease the build of grammar. To use it you can
- * import the field {@code is} statically and then use the utility functions.
+ * extend the class and define the method {@code define()}. Inside the method
+ * you can use the methods of the class to build up a grammar in easy and
+ * readable way.
  * 
  * <pre>
- * import static com.javax0.jdsl.Grammar.is;
- * ListExecutor ifExecutor = new IfExecutor();
- * PassThroughAnalyzer command = definedLater();
- * Analyzer ifCommand = list(ifExecutor
- *                ,kw("if","("),expression,kw(")"),command
- *                ,is.optional(is.list(kw("else"),command,kw("endif"))));
- * command.define( or(ifCommand,whileCommand,letCommand,printCommand) );
- * Analyzer programAnalyzer = is.many(command);
+ * final Analyzer myGrammar = new GrammarDefinition() {
+ * 	&#064;Override
+ * 	protected final Analyzer define() {
+ * 		ReporterFactory.setReporter(new NullReporter());
+ * 		skipSpaces();
+ * 		final Define expression = later();
+ * 		final Analyzer ifStatement = list(new IfExecutorFactory(),
+ * 				kw(&quot;if&quot;, &quot;(&quot;), expression, kw(&quot;)&quot;, &quot;{&quot;), expression, kw(&quot;}&quot;),
+ * 				optional(kw(&quot;else&quot;, &quot;{&quot;), expression, kw(&quot;}&quot;)));
+ * 		expression.define(or(ifStatement, number(),
+ * 				list(kw(&quot;{&quot;), many(expression), kw(&quot;}&quot;))));
+ * 		return many(expression);
+ * 	}
+ * };
+ * </pre>
+ * <p>
+ * Some of the methods in this class have three different forms:
+ * 
+ * <ol>
+ * <li>method(analyzer/s)</li>
+ * <li>method(factory, analyzer/s)</li>
+ * <li>method(class,analyzer/s)</li>
+ * </ol>
+ * 
+ * The first version analyzers the source and creates an executor that is
+ * created using the {@code SimpleListExecutorFactory}. This will just execute
+ * the underlying executors of the list that is resulted by the analysis.
+ * <p>
+ * The second version uses the executor created by the passed factory.
+ * <p>
+ * The third version just creates a new instance of the executor calling the
+ * method {@code newInstance()} for the passed class.
+ * 
  */
 public abstract class GrammarDefinition implements Analyzer {
 
-	abstract Analyzer define();
+	protected abstract Analyzer define();
 
 	private Analyzer grammar = null;
 	private List<PassThroughAnalyzer> delayedDefinitionAnalyzers = new LinkedList<>();
@@ -123,7 +153,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * If you want case insensitive keywords, then use
 	 * 
 	 */
-	public final Analyzer kw(final String... keywords) {
+	public final Rule kw(final String... keywords) {
 		if (keywords.length == 1) {
 			return new TerminalSymbolAnalyzer(keywords[0], charCompare);
 		}
@@ -137,22 +167,22 @@ public abstract class GrammarDefinition implements Analyzer {
 	}
 
 	/**
-	 * Returns a new {@link PassThroughAnalyzer} analyzer. This way a grammar
-	 * element can be defined later than it is used. This is needed when there
-	 * is some recursive (circular) definition in the grammar. (And usually
-	 * there is.)
+	 * Returns a new special analyzer that implements the interface Define. This
+	 * way a grammar element can be defined later than it is used. This is
+	 * needed when there is some recursive (circular) definition in the grammar.
+	 * (And usually there is.)
 	 * <p>
 	 * The parameter {@code name} is only used in the debug logs when the
 	 * grammar is debugged.
 	 */
-	public final PassThroughAnalyzer later(final String name) {
+	public final Define later(final String name) {
 		final PassThroughAnalyzer delayedDefinitionAnalyzer = new PassThroughAnalyzer(
 				name);
 		delayedDefinitionAnalyzers.add(delayedDefinitionAnalyzer);
 		return delayedDefinitionAnalyzer;
 	}
 
-	public final PassThroughAnalyzer later() {
+	public final Define later() {
 		return later("noname");
 	}
 
@@ -169,19 +199,19 @@ public abstract class GrammarDefinition implements Analyzer {
 	}
 
 	/**
-	 * Create a {@link ListAnalyzer} that uses the executor {@code listExecutor}
-	 * and contains the {@code analyzers} in a list.
+	 * Create a {@link ListAnalyzer} that uses an executor created using the
+	 * {@code listExecutorFactory} and contains the {@code analyzers} in a list.
 	 * <p>
 	 * If the {@code analyzers} contain {@link NoExecutorListAnalyzer} instances
-	 * then these are replaced by the elements of their lists. The flattening is
-	 * done recursively so long as long there are {@link NoExecutorListAnalyzer}
-	 * in any of the lists. This means that the method {@link #kw(String...)}
-	 * can be used with many arguments and when used in the argument list of a
-	 * {@link #list(ListExecutor, Analyzer...)} then they will have the same
-	 * effect as if the strings were used individually to define terminal
-	 * symbols.
+	 * then these analyzers are replaced by the elements of their lists. The
+	 * flattening is done recursively so long as long there are
+	 * {@link NoExecutorListAnalyzer}s in any of the lists. This means that the
+	 * method {@link #kw(String...)} can be used with many arguments and when
+	 * used in the argument list of a {@link #list(ListExecutor, Analyzer...)}
+	 * then they will have the same effect as if the strings were used
+	 * individually to define terminal symbols.
 	 */
-	public final Analyzer list(final Factory<ListExecutor> listExecutorFactory,
+	public final Rule list(final Factory<ListExecutor> listExecutorFactory,
 			final Analyzer... analyzers) {
 		final ListAnalyzer listAnalyzer = new ListAnalyzer(listExecutorFactory);
 		listAnalyzer.setSkipAnalyzer(skippingAnalyzer);
@@ -192,13 +222,25 @@ public abstract class GrammarDefinition implements Analyzer {
 	}
 
 	/**
+	 * Same as {@link #list(Factory, Analyzer...)} except the first argument is
+	 * not a factory, but the class of the executor. For more information see
+	 */
+	public final Rule list(
+			final Class<? extends ListExecutor> listExecutorClass,
+			final Analyzer... analyzers) {
+		Factory<ListExecutor> listExecutorFactory = (Factory<ListExecutor>) FactoryFactory
+				.produce(listExecutorClass);
+		return list(listExecutorFactory, analyzers);
+	}
+
+	/**
 	 * Same as {@link #list(ListExecutor, Analyzer...)} except it does not use
 	 * an external executor, but rather creates a new {@link SimpleListExecutor}
 	 * . This is quite handy in many cases when the underlying elements in the
 	 * list should simply be executed one after the other, or when there is
 	 * nothing to execute in a list.
 	 */
-	public final Analyzer list(final Analyzer... analyzers) {
+	public final Rule list(final Analyzer... analyzers) {
 		return list(SimpleListExecutorFactory.INSTANCE, analyzers);
 	}
 
@@ -206,7 +248,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * Creates an {@link AlternativesAnalyzer} with the arguments as
 	 * alternatives.
 	 */
-	public final Analyzer or(final Analyzer... analyzers) {
+	public final Rule or(final Analyzer... analyzers) {
 		final AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
 		alternativesAnalyzer.add(analyzers);
 		return alternativesAnalyzer;
@@ -217,16 +259,39 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * This means that the underlying analyzer need not be matched, or may be
 	 * matched once.
 	 */
-	public final Analyzer optional(
-			final Factory<ListExecutor> listExecutorFactory,
+	public final Rule optional(final Factory<ListExecutor> listExecutorFactory,
 			final Analyzer analyzer) {
 		return many(listExecutorFactory, analyzer, 0, 1);
 	}
 
-	public final Analyzer optional(
-			final Factory<ListExecutor> listExecutorFactory,
+	/**
+	 * Creates a {@link SequenceAnalyzer} with zero min value and one max value.
+	 * This means that the underlying analyzer need not be matched, or may be
+	 * matched once.
+	 */
+	public final Rule optional(
+			final Class<? extends ListExecutor> listExecutorClass,
+			final Analyzer analyzer) {
+		return many(listExecutorClass, analyzer, 0, 1);
+	}
+
+	/**
+	 * This method is a convenience method to call
+	 * {@code optional(list(factory, analyzers))}
+	 */
+	public final Rule optional(final Factory<ListExecutor> listExecutorFactory,
 			final Analyzer... analyzers) {
 		return optional(listExecutorFactory, list(analyzers));
+	}
+
+	/**
+	 * This method is a convenience method to call
+	 * {@code optional(list(class, analyzers))}
+	 */
+	public final Rule optional(
+			final Class<? extends ListExecutor> listExecutorClass,
+			final Analyzer... analyzers) {
+		return optional(listExecutorClass, list(analyzers));
 	}
 
 	/**
@@ -234,11 +299,15 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * use an external executor, but rather creates a new
 	 * {@link SimpleListExecutor}.
 	 */
-	public final Analyzer optional(final Analyzer analyzer) {
+	public final Rule optional(final Analyzer analyzer) {
 		return optional(SimpleListExecutorFactory.INSTANCE, analyzer);
 	}
 
-	public final Analyzer optional(final Analyzer... analyzers) {
+	/**
+	 * This method is a convenience method to call
+	 * {@code optional(list(analyzers))}
+	 */
+	public final Rule optional(final Analyzer... analyzers) {
 		return optional(SimpleListExecutorFactory.INSTANCE, analyzers);
 	}
 
@@ -248,7 +317,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * successful it creates a new {@link ListExecutor} using the
 	 * {@code listExecutorFactory}.
 	 */
-	public final Analyzer many(final Factory<ListExecutor> listExecutorFactory,
+	public final Rule many(final Factory<ListExecutor> listExecutorFactory,
 			final Analyzer analyzer, final int min, final int max) {
 		final SequenceAnalyzer sequenceAnalyzer = new SequenceAnalyzer(
 				listExecutorFactory, analyzer, min, max);
@@ -257,11 +326,28 @@ public abstract class GrammarDefinition implements Analyzer {
 	}
 
 	/**
+	 * Same as {@link #many(Factory, Analyzer,int ,int)} except the first
+	 * argument is not a factory for a list analyzer but rather the class. The
+	 * executor creation details are described in the class documentation
+	 * {@link GrammarDefinition}.
+	 * 
+	 * @param listExecutorClass
+	 * @param analyzer
+	 * @return
+	 */
+	public final Rule many(
+			final Class<? extends ListExecutor> listExecutorClass,
+			final Analyzer analyzer, final int min, final int max) {
+		Factory<ListExecutor> listExecutorFactory = (Factory<ListExecutor>) FactoryFactory
+				.produce(listExecutorClass);
+		return many(listExecutorFactory, analyzer, min, max);
+	}
+
+	/**
 	 * Same as {@link #many(Factory, Analyzer, int, int)} but it does not accept
 	 * any factory. Instead it uses a {@link SimpleListExecutorFactory}.
 	 */
-	public final Analyzer many(final Analyzer analyzer, final int min,
-			final int max) {
+	public final Rule many(final Analyzer analyzer, final int min, final int max) {
 		return many(SimpleListExecutorFactory.INSTANCE, analyzer, min, max);
 	}
 
@@ -270,17 +356,35 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * argument see {@link #many(Factory, Analyzer, int, int)} with {@code min}
 	 * and {@code max} set to zero, and infinite.
 	 */
-	public final Analyzer manyOptional(
+	public final Rule manyOptional(
 			final Factory<ListExecutor> listExecutorFactory,
 			final Analyzer analyzer) {
 		return many(listExecutorFactory, analyzer, 0, INFINITE);
 	}
 
 	/**
+	 * Same as {@link #manyOptional(Factory, Analyzer)} except the first
+	 * argument is not a factory for a list analyzer but rather the class. The
+	 * executor creation details are described in the class documentation
+	 * {@link GrammarDefinition}.
+	 * 
+	 * @param listExecutorClass
+	 * @param analyzer
+	 * @return
+	 */
+	public final Rule manyOptional(
+			final Class<? extends ListExecutor> listExecutorClass,
+			final Analyzer analyzer) {
+		Factory<ListExecutor> listExecutorFactory = (Factory<ListExecutor>) FactoryFactory
+				.produce(listExecutorClass);
+		return manyOptional(listExecutorFactory, analyzer);
+	}
+
+	/**
 	 * Same as {@link #manyOptional(Factory, Analyzer)} but it does not accept
 	 * any factory. Instead it uses a {@link SimpleListExecutorFactory}.
 	 */
-	public final Analyzer manyOptional(final Analyzer analyzer) {
+	public final Rule manyOptional(final Analyzer analyzer) {
 		return manyOptional(new SimpleListExecutorFactory(), analyzer);
 	}
 
@@ -289,16 +393,34 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * value is one instead of zero. This means that the structure to be
 	 * analyzed by the {@code analyzer} has to be present at least once.
 	 */
-	public final Analyzer many(final Factory<ListExecutor> listExecutorFactory,
+	public final Rule many(final Factory<ListExecutor> listExecutorFactory,
 			final Analyzer analyzer) {
 		return many(listExecutorFactory, analyzer, 1, INFINITE);
+	}
+
+	/**
+	 * Same as {@link #many(Factory, Analyzer)} except the first argument is not
+	 * a factory for a list analyzer but rather the class. The executor creation
+	 * details are described in the class documentation
+	 * {@link GrammarDefinition}.
+	 * 
+	 * @param listExecutorClass
+	 * @param analyzer
+	 * @return
+	 */
+	public final Rule many(
+			final Class<? extends ListExecutor> listExecutorClass,
+			final Analyzer analyzer) {
+		Factory<ListExecutor> listExecutorFactory = (Factory<ListExecutor>) FactoryFactory
+				.produce(listExecutorClass);
+		return many(listExecutorFactory, analyzer);
 	}
 
 	/**
 	 * Same as {@link #many(Factory, Analyzer)} but uses the
 	 * {@link SimpleListExecutorFactory}.
 	 */
-	public final Analyzer many(final Analyzer analyzer) {
+	public final Rule many(final Analyzer analyzer) {
 		return many(SimpleListExecutorFactory.INSTANCE, analyzer);
 	}
 

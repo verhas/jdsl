@@ -16,7 +16,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * @author Peter Verhas
  * 
  */
-public class AlternativesAnalyzer implements Analyzer {
+public class AlternativesAnalyzer implements Rule {
 	private final List<Analyzer> analyzerList = new LinkedList<>();
 	private final Reporter reporter = ReporterFactory.getReporter();
 

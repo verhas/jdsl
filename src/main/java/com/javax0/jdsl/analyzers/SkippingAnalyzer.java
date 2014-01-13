@@ -17,7 +17,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * @author Peter Verhas
  * 
  */
-public abstract class SkippingAnalyzer implements Analyzer {
+public abstract class SkippingAnalyzer implements Rule {
 	private final Reporter reporter = ReporterFactory.getReporter();
 	private final static Executor NO_EXECUTOR = null;
 

@@ -64,3 +64,6 @@ The code using the method above can use the returned grammar:
 The source code is provided in a String. The readily available implementation of the interface `SourceCode` used by the analyzers implements the methods of the interface using an embedded string. The method `analyze()` analyzes the source code and returns the result of the analysis. The analysis can be successful or not. This can be checked calling the method `wasSuccessful()`. If the analysis failed, it means that the source code was not matching the grammar. In that case there is no executor created by the analysis. If the analysis was successful then an executor is created and can be invoked (one or more times) to execute the code.
 
 The executor provides a method `execute()` that accept a single argument, which is an execution context. The execution context is an empty interface defined by the library and is not used by itself. You can pass any object as an execution context to the executors you implement.
+
+For further information and more detailed documentation visit the project [site](http://verhas.github.io/jdsl/index.html "Project site on GitHub")
+

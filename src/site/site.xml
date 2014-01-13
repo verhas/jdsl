@@ -15,7 +15,7 @@
 
 		<menu name="Java Domain Specific Language Development Library (jDSL-DL)">
 			<item name="Introduction" href="index.html" />
-			<item name="Usage" href="usage.html" />
+			<item name="5 minute tutorial" href="5min.html" />
 			<item name="Design" href="design.html" />
 			<item name="Faq" href="faq.html" />
 		</menu>

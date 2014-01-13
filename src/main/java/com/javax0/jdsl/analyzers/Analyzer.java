@@ -6,6 +6,7 @@ package com.javax0.jdsl.analyzers;
  * @author Peter Verhas
  */
 public interface Analyzer {
+
 	/**
 	 * Read the input, perform the analysis and return the result of the
 	 * analysis.

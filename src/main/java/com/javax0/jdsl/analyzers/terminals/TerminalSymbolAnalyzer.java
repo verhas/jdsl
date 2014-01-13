@@ -1,14 +1,14 @@
 package com.javax0.jdsl.analyzers.terminals;
 
 import com.javax0.jdsl.analyzers.AnalysisResult;
-import com.javax0.jdsl.analyzers.Analyzer;
+import com.javax0.jdsl.analyzers.Rule;
 import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.executors.Executor;
 import com.javax0.jdsl.log.Reporter;
 import com.javax0.jdsl.log.ReporterFactory;
 
-public class TerminalSymbolAnalyzer implements Analyzer {
+public class TerminalSymbolAnalyzer implements Rule {
 	private final Reporter reporter = ReporterFactory.getReporter();
 
 	public interface CharCompare {

@@ -27,7 +27,7 @@ public class GrammarTest {
 	private Analyzer defineMyGrammar() {
 		final Analyzer myGrammar = new GrammarDefinition() {
 			@Override
-			final Analyzer define() {
+			protected final Analyzer define() {
 				ReporterFactory.setReporter(new NullReporter());
 				skipSpaces();
 				final Define expression = later();
@@ -77,7 +77,7 @@ public class GrammarTest {
 		GIVEN: {
 			myGrammar = new GrammarDefinition() {
 				@Override
-				final Analyzer define() {
+				protected final Analyzer define() {
 					ReporterFactory.setReporter(new NullReporter());
 					final Define expression = later();
 					return expression;
@@ -98,7 +98,7 @@ public class GrammarTest {
 		GIVEN: {
 			myGrammar = new GrammarDefinition() {
 				@Override
-				final Analyzer define() {
+				protected final Analyzer define() {
 					ReporterFactory.setReporter(new NullReporter());
 					final Define expression = later();
 					return many(kw("k"));

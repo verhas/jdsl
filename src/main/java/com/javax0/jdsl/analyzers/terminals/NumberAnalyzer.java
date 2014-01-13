@@ -2,6 +2,7 @@ package com.javax0.jdsl.analyzers.terminals;
 
 import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
+import com.javax0.jdsl.analyzers.Rule;
 import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.executors.TerminalSymbolExecutor;
@@ -21,7 +22,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * @author Peter Verhas
  * 
  */
-public class NumberAnalyzer implements Analyzer {
+public class NumberAnalyzer implements Rule {
 	private final Reporter reporter = ReporterFactory.getReporter();
 
 	private boolean isIndexInRange(final int i, final SourceCode input) {
@@ -37,7 +38,8 @@ public class NumberAnalyzer implements Analyzer {
 				&& (input.charAt(i) == '+' || input.charAt(i) == '-');
 	}
 
-	private boolean isChar(final int i, final SourceCode input, final char... chars) {
+	private boolean isChar(final int i, final SourceCode input,
+			final char... chars) {
 		if (!isIndexInRange(i, input)) {
 			return false;
 		}
@@ -108,9 +110,13 @@ public class NumberAnalyzer implements Analyzer {
 			return SimpleAnalysisResult.failed(NumberAnalyzer.class);
 		}
 	}
-	public static final Analyzer number() {
-		return new NumberAnalyzer();
+
+	private static final Rule INSTANCE = new NumberAnalyzer();
+	
+	public static final Rule number() {
+		return INSTANCE;
 	}
+
 	@Override
 	public String toString() {
 		return "number";

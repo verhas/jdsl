@@ -1,0 +1,9 @@
+jDSL-DL, 5 minute tutorial
+--------------------------
+
+In this tutorial we will create a very simple domain specific language.
+
+
+#set( $snippetFile = "/src/site/markdown/snippet" )
+#set( $snippetName = "" )
+#parse( "snippet" )

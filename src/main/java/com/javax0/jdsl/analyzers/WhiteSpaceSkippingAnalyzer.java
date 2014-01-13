@@ -2,6 +2,11 @@ package com.javax0.jdsl.analyzers;
 
 /**
  * Analyzer that can be used in SpaceIgnoringAnalyzers to skips white spaces.
+ * <p>
+ * To use this analyzer in the grammar definition import static the method
+ * {@code spaces()}.
+ * <p>
+ * Usual usage does not need the direct use of this analyzer.
  * 
  * @author Peter Verhas
  * 
@@ -15,5 +20,11 @@ public class WhiteSpaceSkippingAnalyzer extends SkippingAnalyzer {
 			i++;
 		}
 		return i;
+	}
+
+	private static Rule INSTANCE = new WhiteSpaceSkippingAnalyzer();
+
+	public static Rule spaces() {
+		return INSTANCE;
 	}
 }

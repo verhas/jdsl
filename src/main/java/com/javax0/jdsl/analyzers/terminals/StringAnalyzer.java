@@ -2,6 +2,7 @@ package com.javax0.jdsl.analyzers.terminals;
 
 import com.javax0.jdsl.analyzers.AnalysisResult;
 import com.javax0.jdsl.analyzers.Analyzer;
+import com.javax0.jdsl.analyzers.Rule;
 import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
 import com.javax0.jdsl.analyzers.SourceCode;
 import com.javax0.jdsl.executors.TerminalSymbolExecutor;
@@ -14,7 +15,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * @author Peter Verhas
  * 
  */
-public class StringAnalyzer implements Analyzer {
+public class StringAnalyzer implements Rule {
 	private final Reporter reporter = ReporterFactory.getReporter();
 	private static final char DQ = '"';
 	private static final char PQ = '\'';
@@ -161,9 +162,9 @@ public class StringAnalyzer implements Analyzer {
 				"string not terminated");
 	}
 
-	public static final Analyzer INSTANCE = new StringAnalyzer();
+	public static final Rule INSTANCE = new StringAnalyzer();
 
-	public static final Analyzer string() {
+	public static final Rule string() {
 		return INSTANCE;
 	}
 
