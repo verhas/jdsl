@@ -18,16 +18,19 @@ public class SimpleAnalysisResult implements AnalysisResult {
 	private final boolean success;
 	private final SourceCode remaining;
 	private final Executor executor;
+	private final AnalysisState state;
 
 	private SimpleAnalysisResult(final boolean success,
-			final SourceCode remaining, final Executor executor) {
+			final SourceCode remaining, final Executor executor,
+			final AnalysisState state) {
 		this.success = success;
 		this.remaining = remaining;
 		this.executor = executor;
+		this.state = state;
 	}
 
 	private static final SimpleAnalysisResult FAILED_RESULT = new SimpleAnalysisResult(
-			false, null, null);
+			false, null, null, null);
 
 	public static SimpleAnalysisResult failed(
 			final Class<? extends Analyzer> klass) {
@@ -43,9 +46,15 @@ public class SimpleAnalysisResult implements AnalysisResult {
 
 	public static SimpleAnalysisResult success(
 			final Class<? extends Analyzer> klass, final SourceCode in,
-			final Executor r) {
+			final Executor r, final AnalysisState state) {
 		ReporterFactory.getReporter().logSuccess(klass);
-		return new SimpleAnalysisResult(true, in, r);
+		return new SimpleAnalysisResult(true, in, r, state);
+	}
+
+	public static SimpleAnalysisResult success(
+			final Class<? extends Analyzer> klass, final SourceCode in,
+			final Executor r) {
+		return success(klass, in, r, null);
 	}
 
 	@Override
@@ -61,6 +70,11 @@ public class SimpleAnalysisResult implements AnalysisResult {
 	@Override
 	public Executor getExecutor() {
 		return executor;
+	}
+
+	@Override
+	public AnalysisState getState() {
+		return state;
 	}
 
 }

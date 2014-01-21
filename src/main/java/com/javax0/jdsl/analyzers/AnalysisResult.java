@@ -20,4 +20,9 @@ public interface AnalysisResult {
 	 * The executor to be used when the analyzed segment is to be executed.
 	 */
 	Executor getExecutor();
+	
+	/**
+	 * Get a state of the analysis
+	 */
+	AnalysisState getState();
 }

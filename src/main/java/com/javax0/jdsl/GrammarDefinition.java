@@ -99,7 +99,7 @@ public abstract class GrammarDefinition implements Analyzer {
 		}
 		assertAllDelayedAnalyzersAreDefined();
 		AnalysisResult result = grammar.analyze(input);
-		if (result.remainingSourceCode().length() > 0) {
+		if (result.wasSuccessful() && result.remainingSourceCode().length() > 0) {
 			result = SimpleAnalysisResult.failed(this.getClass(),
 					"there are trailing characters");
 		}
@@ -252,6 +252,34 @@ public abstract class GrammarDefinition implements Analyzer {
 		final AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
 		alternativesAnalyzer.add(analyzers);
 		return alternativesAnalyzer;
+	}
+
+	/**
+	 * Creates an {@link AlternativesAnalyzer} that matches one of the
+	 * characters of the argument string. In other words if the argument is
+	 * {@code "abc"} then {@code or("abc")} is equivalent to
+	 * {@code or(kw("a"),kw("b"),kw("c"))} using {@link #or(Analyzer...)}.
+	 */
+	public final Rule or(final String terminals) {
+		final AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
+		for (int i = 0; i < terminals.length(); i++) {
+			alternativesAnalyzer.add(kw(terminals.substring(i, i + 1)));
+		}
+		return alternativesAnalyzer;
+	}
+
+	/**
+	 * Same as {@link #or(Analyzer...)}.
+	 */
+	public final Rule oneOf(final Analyzer... analyzers) {
+		return or(analyzers);
+	}
+
+	/**
+	 * Same as {@link #or(Analyzer...)}.
+	 */
+	public final Rule oneOf(final String terminals) {
+		return or(terminals);
 	}
 
 	/**

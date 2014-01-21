@@ -53,6 +53,7 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 	@Override
 	public AnalysisResult analyze() {
 		final List<Executor> executors = new LinkedList<>();
+		final List<AnalysisState> states = new LinkedList<>();
 
 		int i = 0;
 		while (i < minRepetition) {
@@ -60,26 +61,20 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 			if (!result.wasSuccessful()) {
 				return SimpleAnalysisResult.failed(SequenceAnalyzer.class);
 			}
-			if (result.getExecutor() != null) {
-				executors.add(result.getExecutor());
-			}
-			setInput(result.remainingSourceCode());
+			advanceList(result, executors, states);
 			i++;
 		}
 		while (maxRepetition == INFINITE || i < maxRepetition) {
 			final AnalysisResult result = analyzer.analyze(getInput());
 			if (!result.wasSuccessful()) {
 				return SimpleAnalysisResult.success(SequenceAnalyzer.class,
-						getInput(), createExecutor(executors));
+						getInput(), createExecutor(executors), new ListAnalysisState(states));
 			}
-			if (result.getExecutor() != null) {
-				executors.add(result.getExecutor());
-			}
-			setInput(result.remainingSourceCode());
+			advanceList(result, executors, states);
 			i++;
 		}
 		return SimpleAnalysisResult.success(SequenceAnalyzer.class, getInput(),
-				createExecutor(executors));
+				createExecutor(executors), new ListAnalysisState(states));
 	}
 
 	@Override

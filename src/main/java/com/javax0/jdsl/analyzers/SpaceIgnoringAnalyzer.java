@@ -59,6 +59,15 @@ public abstract class SpaceIgnoringAnalyzer implements Rule {
 
 	private final Factory<ListExecutor> listExecutorFactory;
 
+	protected void advanceList(final AnalysisResult result,
+			final List<Executor> executors, final List<AnalysisState> states) {
+		if (result.getExecutor() != null) {
+			executors.add(result.getExecutor());
+		}
+		states.add(result.getState());
+		setInput(result.remainingSourceCode());
+	}
+
 	/**
 	 * Create a new executor. If possible to make simplification flattening
 	 * simple executor structure then flatten.

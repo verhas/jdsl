@@ -3,7 +3,7 @@ package com.javax0.jdsl.analyzers;
 /**
  * SourceCode represents the character stream of the program source code.
  * Implementation of SourceCode should be immutable objects. As the input source
- * is consumed new SourceCode objects are returned by the analyzers. Even though
+ * is consumed, new SourceCode objects are returned by the analyzers. Even though
  * the underlying character stream may be the same in a very similar way as
  * String is implemented in the Java language.
  * <p>
