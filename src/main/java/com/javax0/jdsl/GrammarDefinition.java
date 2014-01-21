@@ -148,7 +148,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * {@code or(kw("A"),kw("B"))}. Alternative analyzer does NOT flatten
 	 * keyword lists.
 	 * <p>
-	 * Note that this version of themethod creates
+	 * Note that this version of them ethod creates
 	 * {@link TerminalSymbolAnalyzer} that compares the keywords case sensitive.
 	 * If you want case insensitive keywords, then use
 	 * 
