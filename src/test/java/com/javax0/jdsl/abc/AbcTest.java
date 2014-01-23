@@ -41,9 +41,9 @@ public class AbcTest {
 							.getState();
 					int previousLen = 0;
 					boolean first = true;
-					for (final AnalysisState state : listState.getStates()) {
+					for (final AnalysisState state : listState ) {
 						final ListAnalysisState thisListState = (ListAnalysisState) state;
-						final int thisLen = thisListState.getStates().size();
+						final int thisLen = thisListState.size();
 						if (!first) {
 							if (previousLen != thisLen) {
 								return SimpleAnalysisResult.failed(this

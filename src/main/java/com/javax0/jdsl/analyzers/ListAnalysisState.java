@@ -1,8 +1,9 @@
 package com.javax0.jdsl.analyzers;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class ListAnalysisState implements AnalysisState {
+public class ListAnalysisState implements AnalysisState, Iterable<AnalysisState> {
 
 	final private List<AnalysisState> states;
 
@@ -14,4 +15,12 @@ public class ListAnalysisState implements AnalysisState {
 		return states;
 	}
 
+	@Override
+	public Iterator<AnalysisState> iterator() {
+		return states.iterator();
+	}
+	
+	public int size(){
+		return states.size();
+	}
 }
