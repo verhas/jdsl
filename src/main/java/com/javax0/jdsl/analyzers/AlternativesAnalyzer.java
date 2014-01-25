@@ -26,12 +26,16 @@ public class AlternativesAnalyzer implements Rule {
 		}
 	}
 
+	private boolean analyzerIsNotNullAnalyzer(Analyzer analyzer) {
+		return !(analyzer instanceof NullAnalyzer);
+	}
+
 	@Override
 	public AnalysisResult analyze(final SourceCode input) {
 		reporter.logStart(AlternativesAnalyzer.class, input, analyzerList);
 		for (final Analyzer analyzer : analyzerList) {
 			final AnalysisResult result = analyzer.analyze(input);
-			if (result.wasSuccessful()) {
+			if (result.wasSuccessful() && analyzerIsNotNullAnalyzer(analyzer)) {
 				reporter.logSuccess(AlternativesAnalyzer.class);
 				return result;
 			}
