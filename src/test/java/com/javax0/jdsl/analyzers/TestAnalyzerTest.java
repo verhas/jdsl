@@ -42,7 +42,7 @@ public class TestAnalyzerTest {
 				@Override
 				public AnalysisResult analyze(final SourceCode input) {
 					return SimpleAnalysisResult.success(null, null,
-							new SimpleListExecutor(), new AnalysisState() {
+							new SimpleListExecutor(), new State() {
 							});
 				}
 			});
@@ -92,7 +92,7 @@ public class TestAnalyzerTest {
 				@Override
 				public AnalysisResult analyze(final SourceCode input) {
 					return SimpleAnalysisResult.success(null, null,
-							new SimpleListExecutor(), new AnalysisState() {
+							new SimpleListExecutor(), new State() {
 							});
 				}
 			});

@@ -60,7 +60,7 @@ public abstract class SpaceIgnoringAnalyzer implements Rule {
 	private final Factory<ListExecutor> listExecutorFactory;
 
 	protected void advanceList(final AnalysisResult result,
-			final List<Executor> executors, final List<AnalysisState> states) {
+			final List<Executor> executors, final List<State> states) {
 		if (result.getExecutor() != null) {
 			executors.add(result.getExecutor());
 		}

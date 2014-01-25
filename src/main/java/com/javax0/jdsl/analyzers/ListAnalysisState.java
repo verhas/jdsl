@@ -3,20 +3,20 @@ package com.javax0.jdsl.analyzers;
 import java.util.Iterator;
 import java.util.List;
 
-public class ListAnalysisState implements AnalysisState, Iterable<AnalysisState> {
+public class ListAnalysisState implements State, Iterable<State> {
 
-	final private List<AnalysisState> states;
+	final private List<State> states;
 
-	public ListAnalysisState(final List<AnalysisState> states) {
+	public ListAnalysisState(final List<State> states) {
 		this.states = states;
 	}
 
-	public List<AnalysisState> getStates() {
+	public List<State> getStates() {
 		return states;
 	}
 
 	@Override
-	public Iterator<AnalysisState> iterator() {
+	public Iterator<State> iterator() {
 		return states.iterator();
 	}
 	

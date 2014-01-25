@@ -24,5 +24,5 @@ public interface AnalysisResult {
 	/**
 	 * Get a state of the analysis
 	 */
-	AnalysisState getState();
+	State getState();
 }

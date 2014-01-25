@@ -54,7 +54,7 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 	public AnalysisResult analyze() {
 		reporter.logStart(ListAnalyzer.class, getInput(), analyzerList);
 		final List<Executor> executors = new LinkedList<>();
-		final List<AnalysisState> states = new LinkedList<>();
+		final List<State> states = new LinkedList<>();
 
 		for (final Analyzer analyzer : analyzerList) {
 			final AnalysisResult result = analyzer.analyze(getInput());

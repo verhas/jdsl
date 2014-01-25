@@ -53,7 +53,7 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 	@Override
 	public AnalysisResult analyze() {
 		final List<Executor> executors = new LinkedList<>();
-		final List<AnalysisState> states = new LinkedList<>();
+		final List<State> states = new LinkedList<>();
 
 		int i = 0;
 		while (i < minRepetition) {

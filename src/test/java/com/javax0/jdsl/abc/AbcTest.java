@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.javax0.jdsl.GrammarDefinition;
 import com.javax0.jdsl.analyzers.AnalysisResult;
-import com.javax0.jdsl.analyzers.AnalysisState;
+import com.javax0.jdsl.analyzers.State;
 import com.javax0.jdsl.analyzers.Analyzer;
 import com.javax0.jdsl.analyzers.ListAnalysisState;
 import com.javax0.jdsl.analyzers.ListAnalyzer;
@@ -41,7 +41,7 @@ public class AbcTest {
 							.getState();
 					int previousLen = 0;
 					boolean first = true;
-					for (final AnalysisState state : listState ) {
+					for (final State state : listState ) {
 						final ListAnalysisState thisListState = (ListAnalysisState) state;
 						final int thisLen = thisListState.size();
 						if (!first) {
