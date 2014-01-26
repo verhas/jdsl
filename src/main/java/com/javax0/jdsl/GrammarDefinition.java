@@ -141,8 +141,8 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * </pre>
 	 * 
 	 * when calling {@link #list(Analyzer...)} or
-	 * {@link #list(ListExecutor, Analyzer...)} because the
-	 * {@link NoExecutorListAnalyzer}s get flattened into the list.
+	 * {@link #list(Class, Analyzer...)} or {@link #list(Factory, Analyzer...)}
+	 * because the {@link NoExecutorListAnalyzer}s get flattened into the list.
 	 * <p>
 	 * Note that you can not use {@code or(kw("A","B"))} instead of
 	 * {@code or(kw("A"),kw("B"))}. Alternative analyzer does NOT flatten
@@ -207,7 +207,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * flattening is done recursively so long as long there are
 	 * {@link NoExecutorListAnalyzer}s in any of the lists. This means that the
 	 * method {@link #kw(String...)} can be used with many arguments and when
-	 * used in the argument list of a {@link #list(ListExecutor, Analyzer...)}
+	 * used in the argument list of a {@link #list(Analyzer...)} or {@link #list(Class, Analyzer...)} or {@link #list(Factory, Analyzer...)}
 	 * then they will have the same effect as if the strings were used
 	 * individually to define terminal symbols.
 	 */
@@ -234,7 +234,7 @@ public abstract class GrammarDefinition implements Analyzer {
 	}
 
 	/**
-	 * Same as {@link #list(ListExecutor, Analyzer...)} except it does not use
+	 * Same as {@link #list(Factory, Analyzer...)} except it does not use
 	 * an external executor, but rather creates a new {@link SimpleListExecutor}
 	 * . This is quite handy in many cases when the underlying elements in the
 	 * list should simply be executed one after the other, or when there is
@@ -358,10 +358,6 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * argument is not a factory for a list analyzer but rather the class. The
 	 * executor creation details are described in the class documentation
 	 * {@link GrammarDefinition}.
-	 * 
-	 * @param listExecutorClass
-	 * @param analyzer
-	 * @return
 	 */
 	public final Rule many(
 			final Class<? extends ListExecutor> listExecutorClass,
@@ -395,10 +391,6 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * argument is not a factory for a list analyzer but rather the class. The
 	 * executor creation details are described in the class documentation
 	 * {@link GrammarDefinition}.
-	 * 
-	 * @param listExecutorClass
-	 * @param analyzer
-	 * @return
 	 */
 	public final Rule manyOptional(
 			final Class<? extends ListExecutor> listExecutorClass,
@@ -431,10 +423,6 @@ public abstract class GrammarDefinition implements Analyzer {
 	 * a factory for a list analyzer but rather the class. The executor creation
 	 * details are described in the class documentation
 	 * {@link GrammarDefinition}.
-	 * 
-	 * @param listExecutorClass
-	 * @param analyzer
-	 * @return
 	 */
 	public final Rule many(
 			final Class<? extends ListExecutor> listExecutorClass,

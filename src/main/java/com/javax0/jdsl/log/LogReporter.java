@@ -100,13 +100,10 @@ public class LogReporter implements Reporter {
 
 	/**
 	 * Write a log message about the starting some analyzer.
-	 * 
-	 * @param LOG
-	 * @param input
 	 */
-	public void logStart(final Class<? extends Analyzer> klass,
+	public void logStart(final Class<? extends Analyzer> analyzerKlass,
 			final SourceCode input) {
-		final Logger log = getLogger(klass);
+		final Logger log = getLogger(analyzerKlass);
 		log.debug(dotTabbing() + "Starting " + debugStringify(input));
 		incTab();
 	}

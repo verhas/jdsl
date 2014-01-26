@@ -8,8 +8,10 @@ import com.javax0.jdsl.log.ReporterFactory;
  * the fields initialized in the constructor values passed as argument and
  * returns them.
  * <p>
- * Use the static methods }{@link #failed()} and
- * {@link #success(SourceCode, Executor)} to get an instance of the class.
+ * Use the static methods {@link #failed(Class)}/{@link #failed(Class, String)}
+ * and {@link #success(Class, SourceCode, Executor)}/
+ * {@link #success(Class, SourceCode, Executor, State)} to get an instance of
+ * the class.
  * 
  * @author Peter Verhas
  * 
