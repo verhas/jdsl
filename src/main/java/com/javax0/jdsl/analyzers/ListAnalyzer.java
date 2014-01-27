@@ -27,6 +27,10 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 		return analyzerList;
 	}
 
+	public void add(final List<Analyzer> analyzers) {
+        analyzerList.addAll(analyzers);
+    }
+
 	/**
 	 * Add one or more analyzers to the list of the analyzers that are used to
 	 * analyze the source.
