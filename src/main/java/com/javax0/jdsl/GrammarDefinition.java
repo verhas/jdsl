@@ -26,7 +26,7 @@ import com.javax0.jdsl.executors.SimpleListExecutor;
 import com.javax0.jdsl.executors.SimpleListExecutorFactory;
 
 /**
- * This class is a singleton to ease the build of grammar. To use it you can
+ * This class is an abstract class to ease the build of grammar. To use it you can
  * extend the class and define the method {@code define()}. Inside the method
  * you can use the methods of the class to build up a grammar in easy and
  * readable way.
