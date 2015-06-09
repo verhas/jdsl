@@ -11,6 +11,10 @@ public class StringSourceCode implements SourceCode {
 
 	private final String source;
 
+	public static SourceCode sourceCode(final String source) {
+		return new StringSourceCode(source);
+	}
+
 	public StringSourceCode(final String source) {
 		if (source == null) {
 			throw new IllegalArgumentException(

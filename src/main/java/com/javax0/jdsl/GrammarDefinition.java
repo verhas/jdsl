@@ -52,7 +52,7 @@ import com.javax0.jdsl.executors.SimpleListExecutorFactory;
  * 
  * <ol>
  * <li>method(analyzer/s)</li>
- * <li>method(factory, analyzer/s)</li>
+ * <li>method(factory,analyzer/s)</li>
  * <li>method(class,analyzer/s)</li>
  * </ol>
  * 

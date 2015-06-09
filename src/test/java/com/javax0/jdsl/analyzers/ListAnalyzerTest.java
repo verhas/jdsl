@@ -10,44 +10,29 @@ import com.javax0.jdsl.executors.ListExecutor;
 
 public class ListAnalyzerTest {
 
-    final static Factory<ListExecutor> noExecutor = null;
-    final static SourceCode noSourceCode = null;
+	final static Factory<ListExecutor> NO_EXECUTOR = null;
 
-    @SuppressWarnings("unused")
-    public void testListAnalyzerGivenListOfNFailAtM(int n, int m) {
-        final Analyzer underlyingAnalyzer;
-        final ListAnalyzer analyzer;
-        final SourceCode sc;
-        GIVEN: {
-            underlyingAnalyzer = successNTimesThenFail(m);
-            analyzer = new ListAnalyzer(noExecutor);
-            for (int i = 0; i < n; i++) {
-                analyzer.add(underlyingAnalyzer);
-            }
-            sc = new StringSourceCode("");
-        }
-        final AnalysisResult result;
-        WHEN: {
-            result = analyzer.analyze(sc);
-        }
-        THEN: {
-            if (n <= m) {
-                Assert.assertTrue(result.wasSuccessful());
-            } else {
-                Assert.assertFalse(result.wasSuccessful());
-            }
-        }
-    }
+	public void acceptsTheResultWhen_M_IsBiggerOrEqThan_N(int n, int m) {
+		final ListAnalyzer analyzer;
+		final Analyzer underlyingAnalyzer = successNTimesThenFail(m);
+		analyzer = new ListAnalyzer(NO_EXECUTOR);
+		for (int i = 0; i < n; i++) {
+			analyzer.add(underlyingAnalyzer);
+		}
+		final SourceCode sc = new StringSourceCode("");
+		final AnalysisResult result = analyzer.analyze(sc);
+		Assert.assertEquals(n <= m, result.wasSuccessful());
+	}
 
-    private static final int MIN_MAX = 3;
-    private static final int MAX_MAX = 10;
+	private static final int MIN_MAX = 3;
+	private static final int MAX_MAX = 10;
 
-    @Test
-    public void given_SequenceAnalyzen_when_AnalyzingAndThereIsSomeBetweenMinAndMax_then_AcceptsTheResult() {
-        for (int min = 1; min <= MIN_MAX; min++) {
-            for (int max = min; max <= MAX_MAX; max++) {
-                testListAnalyzerGivenListOfNFailAtM(min, max);
-            }
-        }
-    }
+	@Test
+	public void acceptsTheResultWhenThereIsNoFailingInTheList() {
+		for (int min = 1; min <= MIN_MAX; min++) {
+			for (int max = min; max <= MAX_MAX; max++) {
+				acceptsTheResultWhen_M_IsBiggerOrEqThan_N(min, max);
+			}
+		}
+	}
 }

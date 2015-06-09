@@ -1,6 +1,12 @@
 package com.javax0.jdsl.analyzers;
 
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.newFailingAnalyzer;
 import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.successNTimesThenFail;
+import static com.javax0.jdsl.analyzers.SequenceAnalyzer.analyzer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,125 +17,70 @@ import com.javax0.jdsl.executors.ListExecutor;
 
 public class SequenceAnalyzerTest {
 
-	final static Factory<ListExecutor> noExecutorFactory = null;
-	final static ListExecutor noExecutor = null;
-	final static SourceCode noSourceCode = null;
-	final static int optionalMin = 0;
-	final static int optionalMax = 1;
-
-	@SuppressWarnings("unused")
-	@Test
-	public void given_SequenceAnalyzerZeroOne_when_AnalyzingAndThereIsNone_then_AcceptsTheInput() {
-		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
-				underlyingAnalyzer, optionalMin, optionalMax);
-		final SourceCode sc = new StringSourceCode("");
-		GIVEN: {
-			Mockito.when(underlyingAnalyzer.analyze(sc)).thenReturn(
-					SimpleAnalysisResult.failed(Analyzer.class));
-		}
-		final AnalysisResult result;
-		WHEN: {
-			result = analyzer.analyze(sc);
-		}
-		THEN: {
-			Mockito.verify(underlyingAnalyzer).analyze(sc);
-			Assert.assertTrue(result.wasSuccessful());
-		}
-	}
-
-	@SuppressWarnings("unused")
-	@Test
-	public void given_SequenceAnalyzerZeroOne_when_AnalyzingAndThereIsNone_then_ReturnsTheInputUnchanged() {
-		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
-				underlyingAnalyzer, optionalMin, optionalMax);
-		final SourceCode sc = new StringSourceCode("");
-		GIVEN: {
-			Mockito.when(underlyingAnalyzer.analyze(sc)).thenReturn(
-					SimpleAnalysisResult.failed(Analyzer.class));
-		}
-		final AnalysisResult result;
-		WHEN: {
-			result = analyzer.analyze(sc);
-		}
-		THEN: {
-			Mockito.verify(underlyingAnalyzer).analyze(sc);
-			Assert.assertEquals(sc, result.remainingSourceCode());
-		}
-	}
-
-	@SuppressWarnings("unused")
-	@Test
-	public void given_SequenceAnalyzerOptional_when_AnalyzingAndThereIsOne_then_AcceptsTheResult() {
-		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
-				underlyingAnalyzer, optionalMin, optionalMax);
-		final SourceCode sc = new StringSourceCode("");
-		final SourceCode modified = new StringSourceCode("");
-		GIVEN: {
-			Mockito.when(underlyingAnalyzer.analyze(sc)).thenReturn(
-					SimpleAnalysisResult
-							.success(Analyzer.class, modified, null));
-		}
-		final AnalysisResult result;
-		WHEN: {
-			result = analyzer.analyze(sc);
-		}
-		THEN: {
-			Mockito.verify(underlyingAnalyzer).analyze(sc);
-			Assert.assertTrue(result.wasSuccessful());
-		}
-	}
-
-	@SuppressWarnings("unused")
-	@Test
-	public void given_SequenceAnalyzerOptional_when_AnalyzingAndThereIsOne_then_ReturnsTheInputModified() {
-		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
-		final Analyzer analyzer = new SequenceAnalyzer(noExecutorFactory,
-				underlyingAnalyzer, optionalMin, optionalMax);
-		final SourceCode sc = new StringSourceCode("");
-		final SourceCode modified = new StringSourceCode("");
-		GIVEN: {
-			Mockito.when(underlyingAnalyzer.analyze(sc)).thenReturn(
-					SimpleAnalysisResult.success(Analyzer.class, modified,
-							noExecutor));
-		}
-		final AnalysisResult result;
-		WHEN: {
-			result = analyzer.analyze(sc);
-		}
-		THEN: {
-			Mockito.verify(underlyingAnalyzer).analyze(sc);
-			Assert.assertEquals(modified, result.remainingSourceCode());
-		}
-	}
-
-	@SuppressWarnings("unused")
-	public void testMinMaxAccepted(int min, int max, int loop) {
-		final Analyzer underlyingAnalyzer;
-		final Analyzer analyzer;
-		final SourceCode sc;
-		GIVEN: {
-			underlyingAnalyzer = successNTimesThenFail(loop);
-			analyzer = new SequenceAnalyzer(noExecutorFactory, underlyingAnalyzer,
-					min, max);
-			sc = new StringSourceCode("");
-		}
-		final AnalysisResult result;
-		WHEN: {
-			result = analyzer.analyze(sc);
-		}
-		THEN: {
-			Assert.assertTrue(result.wasSuccessful());
-		}
-	}
-
+	private final static Factory<ListExecutor> noExecutorFactory = null;
+	private final static ListExecutor noExecutor = null;
+	private final static int optionalMin = 0;
+	private final static int optionalMax = 1;
+	private final static SourceCode MODIFIED_INPUT = new StringSourceCode("");
+	private final static SourceCode SOURCE_CODE = new StringSourceCode("");
 	private static final int MIN_MAX = 3;
 	private static final int MAX_MAX = 10;
 
 	@Test
-	public void given_SequenceAnalyzen_when_AnalyzingAndThereIsSomeBetweenMinAndMax_then_AcceptsTheResult() {
+	public void given_SequenceAnalyzerZeroOne_when_AnalyzingAndThereIsNone_then_AcceptsTheInput() {
+		final Analyzer underlyingAnalyzer = newFailingAnalyzer();
+		final Analyzer analyzer = analyzer(noExecutorFactory,
+				underlyingAnalyzer, optionalMin, optionalMax);
+		final AnalysisResult result = analyzer.analyze(SOURCE_CODE);
+		verify(underlyingAnalyzer).analyze(SOURCE_CODE);
+		assertTrue(result.wasSuccessful());
+	}
+
+	@Test
+	public void given_SequenceAnalyzerZeroOne_when_AnalyzingAndThereIsNone_then_ReturnsTheInputUnchanged() {
+		final Analyzer underlyingAnalyzer = newFailingAnalyzer();
+		final Analyzer analyzer = analyzer(noExecutorFactory,
+				underlyingAnalyzer, optionalMin, optionalMax);
+		final AnalysisResult result = analyzer.analyze(SOURCE_CODE);
+		verify(underlyingAnalyzer).analyze(SOURCE_CODE);
+		assertEquals(SOURCE_CODE, result.remainingSourceCode());
+	}
+
+	@Test
+	public void oneElementSequenceIsAccepted() {
+		final AnalysisResult result = whenThereIsAOneElementSequence();
+		assertTrue(result.wasSuccessful());
+	}
+
+	@Test
+	public void returnsModifiedInputForOneElementSequence() {
+		final AnalysisResult result = whenThereIsAOneElementSequence();
+		Assert.assertEquals(MODIFIED_INPUT, result.remainingSourceCode());
+	}
+
+	private AnalysisResult whenThereIsAOneElementSequence() {
+		final Analyzer underlyingAnalyzer = Mockito.mock(Analyzer.class);
+		when(underlyingAnalyzer.analyze(SOURCE_CODE)).thenReturn(
+				SimpleAnalysisResult.success(Analyzer.class, MODIFIED_INPUT,
+						noExecutor));
+		final Analyzer analyzer = analyzer(noExecutorFactory,
+				underlyingAnalyzer, optionalMin, optionalMax);
+		final AnalysisResult result = analyzer.analyze(SOURCE_CODE);
+		verify(underlyingAnalyzer).analyze(SOURCE_CODE);
+		return result;
+	}
+
+	private void testMinMaxAccepted(int min, int max, int loop) {
+		final Analyzer underlyingAnalyzer;
+		final Analyzer analyzer;
+		underlyingAnalyzer = successNTimesThenFail(loop);
+		analyzer = analyzer(noExecutorFactory, underlyingAnalyzer, min, max);
+		final AnalysisResult result = analyzer.analyze(SOURCE_CODE);
+		assertTrue(result.wasSuccessful());
+	}
+
+	@Test
+	public void successfulForSequenceHavingElementsBetweenMinAndMaxNumbers() {
 		for (int min = 1; min <= MIN_MAX; min++) {
 			for (int max = min; max <= MAX_MAX; max++) {
 				for (int loop = min; loop <= max; loop++) {

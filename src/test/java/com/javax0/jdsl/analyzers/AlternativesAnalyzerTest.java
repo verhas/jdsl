@@ -1,172 +1,96 @@
 package com.javax0.jdsl.analyzers;
 
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.fillFailingAnalyzers;
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.newFailingAnalyzer;
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.newSuccessfulAnalyzer;
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.verifyAnalyzerWasInvoked;
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.verifyAnalyzersWereInvoked;
+import static com.javax0.jdsl.analyzers.MockAnalyzerGeneratorUtil.verifyAnalyzersWereNotInvoked;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class AlternativesAnalyzerTest {
 
-	@SuppressWarnings("unused")
-	private void given_AlternativesAnalyzerNFailing1SuccessFullMFailing_then_OnlyUpToSuccessFulIsCalled(
-			int n, int m) {
-		final AlternativesAnalyzer analyzer;
+
+
+	private void callsUntilTheFirstSuccesfulSubanalyzer(int n, int m) {
 		final SourceCode sc = null;
-		GIVEN: {
-			analyzer = new AlternativesAnalyzer();
-		}
-		final AnalysisResult result;
+		final AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
 		final Analyzer[] analyzers = new Analyzer[n + m];
-		final Analyzer successfulAnalyzer;
-		WHEN: {
-			for (int i = 0; i < n; i++) {
-				analyzers[i] = Mockito.mock(Analyzer.class);
-				Mockito.when(
-						analyzers[i].analyze(Mockito.any(SourceCode.class)))
-						.thenReturn(SimpleAnalysisResult.failed(Analyzer.class));
-				analyzer.add(analyzers[i]);
-			}
-			successfulAnalyzer = Mockito.mock(Analyzer.class);
-			Mockito.when(
-					successfulAnalyzer.analyze(Mockito.any(SourceCode.class)))
-					.thenReturn(
-							SimpleAnalysisResult.success(Analyzer.class, null,
-									null));
-			analyzer.add(successfulAnalyzer);
-			for (int i = n; i < n + m; i++) {
-				analyzers[i] = Mockito.mock(Analyzer.class);
-				Mockito.when(
-						analyzers[i].analyze(Mockito.any(SourceCode.class)))
-						.thenReturn(SimpleAnalysisResult.failed(Analyzer.class));
-				analyzer.add(analyzers[i]);
-			}
-			result = analyzer.analyze(sc);
-		}
-		THEN: {
-			for (int i = 0; i < n; i++) {
-				Mockito.verify(analyzers[i]).analyze(
-						Mockito.any(SourceCode.class));
-			}
-			Mockito.verify(successfulAnalyzer).analyze(
-					Mockito.any(SourceCode.class));
-			for (int i = n; i < n + m; i++) {
-				Mockito.verify(analyzers[i], Mockito.never()).analyze(
-						Mockito.any(SourceCode.class));
-			}
-			Assert.assertTrue(result.wasSuccessful());
-		}
+		fillFailingAnalyzers(0, n, analyzers, alternativesAnalyzer);
+		final Analyzer successfulAnalyzer = newSuccessfulAnalyzer();
+		alternativesAnalyzer.add(successfulAnalyzer);
+		fillFailingAnalyzers(n, n + m, analyzers, alternativesAnalyzer);
+
+		final AnalysisResult result = alternativesAnalyzer.analyze(sc);
+
+		verifyAnalyzersWereInvoked(0, n, analyzers);
+		verifyAnalyzerWasInvoked(successfulAnalyzer);
+		verifyAnalyzersWereNotInvoked(n, n + m, analyzers);
+		Assert.assertTrue(result.wasSuccessful());
 	}
 
 	@Test
-	public void given_AnAlternativesAnalyzer_when_FirstAlternativeMatches_then_ReturnsSuccessful() {
+	public void callsUntilTheFirstSuccesfulSubanalyzer() {
 		for (int n = 0; n < 3; n++) {
 			for (int m = 0; m < 3; m++) {
-				given_AlternativesAnalyzerNFailing1SuccessFullMFailing_then_OnlyUpToSuccessFulIsCalled(
-						n, m);
+				callsUntilTheFirstSuccesfulSubanalyzer(n, m);
 			}
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void given_AlternativesAnalyzerNFailing_then_AllCalledAndFail(int n) {
-		final AlternativesAnalyzer analyzer;
+	private void allFailingSubanalyzersAreInvoked(int n) {
 		final SourceCode sc = null;
-		GIVEN: {
-			analyzer = new AlternativesAnalyzer();
-		}
-		final AnalysisResult result;
+		final AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
 		final Analyzer[] analyzers = new Analyzer[n];
-		WHEN: {
-			for (int i = 0; i < n; i++) {
-				analyzers[i] = Mockito.mock(Analyzer.class);
-				Mockito.when(
-						analyzers[i].analyze(Mockito.any(SourceCode.class)))
-						.thenReturn(SimpleAnalysisResult.failed(Analyzer.class));
-				analyzer.add(analyzers[i]);
-			}
-			result = analyzer.analyze(sc);
-		}
-		THEN: {
-			for (int i = 0; i < n; i++) {
-				Mockito.verify(analyzers[i]).analyze(
-						Mockito.any(SourceCode.class));
-			}
-			Assert.assertFalse(result.wasSuccessful());
-		}
+		fillFailingAnalyzers(0, n, analyzers, alternativesAnalyzer);
+
+		final AnalysisResult result = alternativesAnalyzer.analyze(sc);
+		verifyAnalyzersWereInvoked(0, n, analyzers);
+		Assert.assertFalse(result.wasSuccessful());
 	}
 
 	@Test
-	public void given_AnAlternativesAnalyzer_when_NoneOfTheAlternativesMatch_then_ReturnsFailed() {
+	public void allFailingSubanalyzersAreInvoked() {
 		for (int n = 0; n < 10; n++) {
-			given_AlternativesAnalyzerNFailing_then_AllCalledAndFail(n);
+			allFailingSubanalyzersAreInvoked(n);
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void given_AlternativesAnalyzerNFailing1NullAnalyzerBetween1SuccessFullMFailing_then_OnlyUpToSuccessFulIsCalled(
+	private void callsUntilTheFirstSuccesfulSubanalyzerEvenAfterANullAnalyzer(
 			int n, int m, int k) {
-		final AlternativesAnalyzer analyzer;
 		final SourceCode sc = null;
-		GIVEN: {
-			analyzer = new AlternativesAnalyzer();
-		}
-		final AnalysisResult result;
+		final AlternativesAnalyzer alternativesAnalyzer = new AlternativesAnalyzer();
 		final Analyzer[] analyzers = new Analyzer[n + m];
-		final Analyzer successfulAnalyzer;
-		WHEN: {
-			for (int i = 0; i < n; i++) {
-				if (i == k) {
-					analyzers[i] = Mockito.mock(NullAnalyzer.class);
-					Mockito.when(
-							analyzers[i].analyze(Mockito.any(SourceCode.class)))
-							.thenReturn(
-									SimpleAnalysisResult.success(
-											Analyzer.class, null, null, null));
-				} else {
-					analyzers[i] = Mockito.mock(Analyzer.class);
-					Mockito.when(
-							analyzers[i].analyze(Mockito.any(SourceCode.class)))
-							.thenReturn(
-									SimpleAnalysisResult.failed(Analyzer.class));
-				}
-				analyzer.add(analyzers[i]);
+		for (int i = 0; i < n; i++) {
+			if (i == k) {
+				analyzers[i] = newSuccessfulAnalyzer(NullAnalyzer.class);
+			} else {
+				analyzers[i] = newFailingAnalyzer();
 			}
-			successfulAnalyzer = Mockito.mock(Analyzer.class);
-			Mockito.when(
-					successfulAnalyzer.analyze(Mockito.any(SourceCode.class)))
-					.thenReturn(
-							SimpleAnalysisResult.success(Analyzer.class, null,
-									null));
-			analyzer.add(successfulAnalyzer);
-			for (int i = n; i < n + m; i++) {
-				analyzers[i] = Mockito.mock(Analyzer.class);
-				Mockito.when(
-						analyzers[i].analyze(Mockito.any(SourceCode.class)))
-						.thenReturn(SimpleAnalysisResult.failed(Analyzer.class));
-				analyzer.add(analyzers[i]);
-			}
-			result = analyzer.analyze(sc);
+			alternativesAnalyzer.add(analyzers[i]);
 		}
-		THEN: {
-			for (int i = 0; i < n; i++) {
-				Mockito.verify(analyzers[i]).analyze(
-						Mockito.any(SourceCode.class));
-			}
-			Mockito.verify(successfulAnalyzer).analyze(
-					Mockito.any(SourceCode.class));
-			for (int i = n; i < n + m; i++) {
-				Mockito.verify(analyzers[i], Mockito.never()).analyze(
-						Mockito.any(SourceCode.class));
-			}
-			Assert.assertTrue(result.wasSuccessful());
+		final Analyzer successfulAnalyzer = newSuccessfulAnalyzer();
+		alternativesAnalyzer.add(successfulAnalyzer);
+		for (int i = n; i < n + m; i++) {
+			analyzers[i] = newFailingAnalyzer();
+			alternativesAnalyzer.add(analyzers[i]);
 		}
+		final AnalysisResult result = alternativesAnalyzer.analyze(sc);
+
+		verifyAnalyzersWereInvoked(0, n, analyzers);
+		verifyAnalyzerWasInvoked(successfulAnalyzer);
+		verifyAnalyzersWereNotInvoked(n, n + m, analyzers);
+		Assert.assertTrue(result.wasSuccessful());
 	}
 
 	@Test
-	public void given_AnAlternativesAnalyzerWithNullAnalyzer_when_FirstAlternativeMatches_then_ReturnsSuccessful() {
+	public void callsUntilTheFirstSuccesfulSubanalyzerEvenAfterANullAnalyzer() {
 		for (int n = 0; n < 3; n++) {
 			for (int m = 0; m < 3; m++) {
 				for (int k = 0; k <= n; k++) {
-					given_AlternativesAnalyzerNFailing1NullAnalyzerBetween1SuccessFullMFailing_then_OnlyUpToSuccessFulIsCalled(
+					callsUntilTheFirstSuccesfulSubanalyzerEvenAfterANullAnalyzer(
 							n, m, k);
 				}
 			}

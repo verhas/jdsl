@@ -63,9 +63,6 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 			if (!result.wasSuccessful()) {
 				return SimpleAnalysisResult.failed(ListAnalyzer.class);
 			}
-			if (result.getExecutor() != null) {
-				executors.add(result.getExecutor());
-			}
 			advanceList(result, executors, states);
 		}
 

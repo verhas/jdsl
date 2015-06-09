@@ -26,6 +26,14 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 	private final int maxRepetition;
 	public static final int INFINITE = -1;
 
+	public static Analyzer analyzer(
+			final Factory<ListExecutor> listExecutorFactory,
+			final Analyzer analyzer, final int minRepetition,
+			final int maxRepetition) {
+		return new SequenceAnalyzer(listExecutorFactory, analyzer,
+				minRepetition, maxRepetition);
+	}
+
 	public SequenceAnalyzer(final Factory<ListExecutor> listExecutorFactory,
 			final Analyzer analyzer, final int minRepetition,
 			final int maxRepetition) {
@@ -68,7 +76,8 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 			final AnalysisResult result = analyzer.analyze(getInput());
 			if (!result.wasSuccessful()) {
 				return SimpleAnalysisResult.success(SequenceAnalyzer.class,
-						getInput(), createExecutor(executors), new ListAnalysisState(states));
+						getInput(), createExecutor(executors),
+						new ListAnalysisState(states));
 			}
 			advanceList(result, executors, states);
 			i++;

@@ -1,8 +1,12 @@
 package com.javax0.jdsl.analyzers;
 
+import static com.javax0.jdsl.analyzers.StringSourceCode.sourceCode;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.javax0.jdsl.analyzers.Tuples.DoubleStringTuple;
+import com.javax0.jdsl.analyzers.Tuples.LongStringTuple;
 import com.javax0.jdsl.analyzers.terminals.NumberAnalyzer;
 import com.javax0.jdsl.executors.Context;
 import com.javax0.jdsl.executors.Executor;
@@ -10,225 +14,148 @@ import com.javax0.jdsl.executors.Executor;
 public class NumberAnalyzerTest {
 	private static final Context nullContext = null;
 
-	@SuppressWarnings("unused")
-	private void testLongReturnsValue(Long expected, String input) {
-		final NumberAnalyzer ka;
-		final SourceCode sc;
-		GIVEN: {
-			ka = new NumberAnalyzer();
-			sc = new StringSourceCode(input);
-		}
-
-		final Long actual;
-		WHEN: {
-			final AnalysisResult result = ka.analyze(sc);
-			final Executor executor = result.getExecutor();
-			Assert.assertNotNull(executor);
-			actual = (Long) executor.execute(nullContext);
-		}
-		THEN: {
-			Assert.assertEquals(expected, actual);
-		}
+	private static LongStringTuple tuple(Long l, String s) {
+		return new LongStringTuple(l, s);
 	}
 
-	@SuppressWarnings("unused")
-	private void testAnalyzerEatsUpCharacters(String input, int remainderLength) {
-		final NumberAnalyzer ka;
-		final SourceCode sc;
-		GIVEN: {
-			ka = new NumberAnalyzer();
-			sc = new StringSourceCode(input);
-		}
-		final SourceCode remainder;
-		WHEN: {
-			final AnalysisResult result = ka.analyze(sc);
-			remainder = result.remainingSourceCode();
-		}
-		THEN: {
-			Assert.assertEquals(remainderLength, remainder.length());
-		}
+	private static DoubleStringTuple tuple(Double d, String s) {
+		return new DoubleStringTuple(d, s);
 	}
 
-	private static class LongTuple {
-		private final Long l;
-		private final String s;
-
-		LongTuple(Long l, String s) {
-			this.l = l;
-			this.s = s;
-		}
+	private static LongStringTuple[] tuples(LongStringTuple... tuple) {
+		return tuple;
 	}
 
-	LongTuple ltuples[] = new LongTuple[] { new LongTuple(1230L, "1230"),
-			new LongTuple(-1230L, "-1230"), new LongTuple(+1230L, "+1230"), };
+	private static DoubleStringTuple[] tuples(DoubleStringTuple... tuple) {
+		return tuple;
+	}
+
+	private void parsesStringContainingLongAndExtraCharacter_ValueIsReturned(
+			Long expected, String input) {
+		final NumberAnalyzer ka = new NumberAnalyzer();
+		final SourceCode sc = sourceCode(input);
+
+		final AnalysisResult result = ka.analyze(sc);
+		final Executor executor = result.getExecutor();
+		Assert.assertNotNull(executor);
+		final Long actual = (Long) executor.execute(nullContext);
+		Assert.assertEquals(expected, actual);
+	}
+
+	private void analyzerEatsUpCharacters(String input, int remainderLength) {
+		final NumberAnalyzer ka = new NumberAnalyzer();
+		final SourceCode sc = sourceCode(input);
+		final AnalysisResult result = ka.analyze(sc);
+		final SourceCode remainder = result.remainingSourceCode();
+		Assert.assertEquals(remainderLength, remainder.length());
+	}
+
+	LongStringTuple ltuples[] = tuples(tuple(1230L, "1230"),
+			tuple(-1230L, "-1230"), tuple(+1230L, "+1230"));
 
 	@Test
-	public void given_IntegerNumberAtTheEndOfTheInput_when_CallingAnalysis_then_ReturnsTheLongValue() {
-		for (LongTuple tuple : ltuples) {
-			testLongReturnsValue(tuple.l, tuple.s);
+	public void stringContainingLongIsAnalyzed_ValueIsReturned() {
+		for (LongStringTuple tuple : ltuples) {
+			parsesStringContainingLongAndExtraCharacter_ValueIsReturned(
+					tuple.l, tuple.s);
 		}
 	}
 
 	@Test
-	public void given_IntegerNumberAtTheEndOfTheInput_when_CallingAnalysis_then_ItEatsSourceTotally() {
-		for (LongTuple tuple : ltuples) {
-			testAnalyzerEatsUpCharacters(tuple.s, 0);
+	public void parserConsumesTotallyStringContainingLongOnly() {
+		for (LongStringTuple tuple : ltuples) {
+			analyzerEatsUpCharacters(tuple.s, 0);
 		}
 	}
 
 	@Test
-	public void given_IntegerNumberBeforeTheEndOfTheInput_when_CallingAnalysis_then_ItEatsSourceUntilTerminatingSymbol() {
-		for (LongTuple tuple : ltuples) {
-			testAnalyzerEatsUpCharacters(tuple.s + "A", 1);
+	public void parserDoesNotEatExtraCharacterAfterLong() {
+		for (LongStringTuple tuple : ltuples) {
+			analyzerEatsUpCharacters(tuple.s + "A", 1);
 		}
 	}
 
 	@Test
-	public void given_IntegerNumberBeforeTheEndOfTheInput_when_CallingAnalysis_then_ReturnsTheLongValue() {
-		for (LongTuple tuple : ltuples) {
-			testLongReturnsValue(tuple.l, tuple.s + "A");
+	public void parsesStringContainingLongAndExtraCharacter_ValueIsReturned() {
+		for (LongStringTuple tuple : ltuples) {
+			parsesStringContainingLongAndExtraCharacter_ValueIsReturned(
+					tuple.l, tuple.s + "A");
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void testDoubleReturnsValue(Double expected, String input) {
-		final NumberAnalyzer ka;
-		final SourceCode sc;
-		GIVEN: {
-			ka = new NumberAnalyzer();
-			sc = new StringSourceCode(input);
-		}
+	private void stringContainingDoubleIsAnalyzed_ValueIsReturned(
+			Double expected, String input) {
+		final NumberAnalyzer ka = new NumberAnalyzer();
+		final SourceCode sc = sourceCode(input);
 
-		final Double actual;
-		WHEN: {
-			final AnalysisResult result = ka.analyze(sc);
-			final Executor executor = result.getExecutor();
-			Assert.assertNotNull(executor);
-			actual = (Double) executor.execute(nullContext);
-		}
-		THEN: {
-			Assert.assertEquals(expected, actual);
-		}
+		final AnalysisResult result = ka.analyze(sc);
+		final Executor executor = result.getExecutor();
+		Assert.assertNotNull(executor);
+		final Double actual = (Double) executor.execute(nullContext);
+		Assert.assertEquals(expected, actual);
 	}
 
-	private static class DoubleTuple {
-		private final Double d;
-		private final String s;
-
-		DoubleTuple(Double d, String s) {
-			this.d = d;
-			this.s = s;
-		}
-	}
-
-	DoubleTuple dtuples[] = new DoubleTuple[] {
-			new DoubleTuple(1230.0, "1230.0"),
-			new DoubleTuple(1230.0, "1230."),
-			new DoubleTuple(-1230.0, "-1230.0"),
-			new DoubleTuple(-1230.0, "-123E1"),
-			new DoubleTuple(-12300.0, "-123E2"),
-			new DoubleTuple(-1230.0, "-123.E1"),
-			new DoubleTuple(-12300.0, "-123.E2"),
-			new DoubleTuple(-1230.0, "-123.0E1"),
-			new DoubleTuple(-12300.0, "-123.0E2"),
-			new DoubleTuple(-1230.0, "-123E+1"),
-			new DoubleTuple(-12300.0, "-123E+2"),
-			new DoubleTuple(-1230.0, "-123.E+1"),
-			new DoubleTuple(-12300.0, "-123.E+2"),
-			new DoubleTuple(-1230.0, "-123.0E+1"),
-			new DoubleTuple(-12300.0, "-123.0E+2"),
-			new DoubleTuple(-12.3, "-123E-1"),
-			new DoubleTuple(-1.23, "-123E-2"),
-			new DoubleTuple(-12.3, "-123.E-1"),
-			new DoubleTuple(-1.23, "-123.E-2"),
-			new DoubleTuple(-12.3, "-123.0E-1"),
-			new DoubleTuple(-1.230, "-123.0E-2"), };
+	DoubleStringTuple dtuples[] = tuples(tuple(1230.0, "1230.0"),
+			tuple(1230.0, "1230."), tuple(-1230.0, "-1230.0"),
+			tuple(-1230.0, "-123E1"), tuple(-12300.0, "-123E2"),
+			tuple(-1230.0, "-123.E1"), tuple(-12300.0, "-123.E2"),
+			tuple(-1230.0, "-123.0E1"), tuple(-12300.0, "-123.0E2"),
+			tuple(-1230.0, "-123E+1"), tuple(-12300.0, "-123E+2"),
+			tuple(-1230.0, "-123.E+1"), tuple(-12300.0, "-123.E+2"),
+			tuple(-1230.0, "-123.0E+1"), tuple(-12300.0, "-123.0E+2"),
+			tuple(-12.3, "-123E-1"), tuple(-1.23, "-123E-2"),
+			tuple(-12.3, "-123.E-1"), tuple(-1.23, "-123.E-2"),
+			tuple(-12.3, "-123.0E-1"), tuple(-1.230, "-123.0E-2"));
 
 	@Test
-	public void given_DoubleNumberAtTheEndOfTheInput_when_CallingAnalysis_then_ReturnsTheDoubleValue() {
-		for (DoubleTuple tuple : dtuples) {
-			testDoubleReturnsValue(tuple.d, tuple.s);
+	public void stringContainingDoubleIsAnalyzed_ValueIsReturned() {
+		for (DoubleStringTuple tuple : dtuples) {
+			stringContainingDoubleIsAnalyzed_ValueIsReturned(tuple.d, tuple.s);
 		}
 	}
 
 	@Test
-	public void given_DoubleNumberBeforeTheEndOfTheInput_when_CallingAnalysis_then_ReturnsTheDoubleValue() {
-		for (DoubleTuple tuple : dtuples) {
-			testDoubleReturnsValue(tuple.d, tuple.s + "A");
+	public void stringContainingDoubleAndExtraCharacterIsAnalyzed_ValueIsReturned() {
+		for (DoubleStringTuple tuple : dtuples) {
+			stringContainingDoubleIsAnalyzed_ValueIsReturned(tuple.d, tuple.s
+					+ "A");
 		}
 	}
 
 	@Test
-	public void given_DoubleNumberAtTheEndOfTheInput_when_CallingAnalysis_then_ItEatsSourceTotally() {
-		for (DoubleTuple tuple : dtuples) {
-			testAnalyzerEatsUpCharacters(tuple.s, 0);
+	public void parserConsumesTotallyStringContainingDoubleOnly() {
+		for (DoubleStringTuple tuple : dtuples) {
+			analyzerEatsUpCharacters(tuple.s, 0);
 		}
 	}
 
 	@Test
-	public void given_DoubleNumberBeforeTheEndOfTheInput_when_CallingAnalysis_then_ItEatsSourceUntilTerminatingSymbol() {
-		for (DoubleTuple tuple : dtuples) {
-			testAnalyzerEatsUpCharacters(tuple.s + "A", 1);
+	public void parserDoesNotEatExtraCharacterAfterDouble() {
+		for (DoubleStringTuple tuple : dtuples) {
+			analyzerEatsUpCharacters(tuple.s + "A", 1);
 		}
 	}
 
-	@SuppressWarnings("unused")
-	@Test
-	public void given_SomeFalseString_when_CallingAnalysis_then_Fails() {
-		final NumberAnalyzer ka;
-		final SourceCode sc;
-		GIVEN: {
-			ka = new NumberAnalyzer();
-			sc = new StringSourceCode("...");
-		}
+	private void numberParserFails(final String s) {
+		final NumberAnalyzer ka = new NumberAnalyzer();
+		final SourceCode sc = sourceCode("...");
 
-		final Double actual;
-		final AnalysisResult result;
-		WHEN: {
-			result = ka.analyze(sc);
-		}
-		THEN: {
-			Assert.assertFalse(result.wasSuccessful());
-		}
+		final AnalysisResult result = ka.analyze(sc);
+		Assert.assertFalse(result.wasSuccessful());
 	}
 
-	@SuppressWarnings("unused")
 	@Test
-	public void given_EmptyString_when_CallingAnalysis_then_Fails() {
-		final NumberAnalyzer ka;
-		final SourceCode sc;
-		GIVEN: {
-			ka = new NumberAnalyzer();
-			sc = new StringSourceCode("");
-		}
-
-		final Double actual;
-		final AnalysisResult result;
-		WHEN: {
-			result = ka.analyze(sc);
-		}
-		THEN: {
-			Assert.assertFalse(result.wasSuccessful());
-		}
+	public void nonNumberStringIsNotParsedByNumberParser() {
+		numberParserFails("...");
 	}
 
-	@SuppressWarnings("unused")
 	@Test
-	public void given_ASignString_when_CallingAnalysis_then_Fails() {
-		final NumberAnalyzer ka;
-		final SourceCode sc;
-		GIVEN: {
-			ka = new NumberAnalyzer();
-			sc = new StringSourceCode("+");
-		}
+	public void emptyStringIsNotParsedByNumberParser() {
+		numberParserFails("");
+	}
 
-		final Double actual;
-		final AnalysisResult result;
-		WHEN: {
-			result = ka.analyze(sc);
-		}
-		THEN: {
-			Assert.assertFalse(result.wasSuccessful());
-		}
+	@Test
+	public void aSignCharacterIsNotParsedAsNumber() {
+		numberParserFails("+");
 	}
 }

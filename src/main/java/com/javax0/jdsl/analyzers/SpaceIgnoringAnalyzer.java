@@ -59,6 +59,17 @@ public abstract class SpaceIgnoringAnalyzer implements Rule {
 
 	private final Factory<ListExecutor> listExecutorFactory;
 
+	/**
+	 * If the executor is not null in the result then add that to the executors.
+	 * 
+	 * Add the state from the result to the states.
+	 * 
+	 * Advance the input to the remaining source code.
+	 * 
+	 * @param result that comes from some analyzer.
+	 * @param executors list of executors for some list.
+	 * @param states list of states for some list.
+	 */
 	protected void advanceList(final AnalysisResult result,
 			final List<Executor> executors, final List<State> states) {
 		if (result.getExecutor() != null) {
