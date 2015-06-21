@@ -70,46 +70,34 @@ public class GrammarTest {
 
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = RuntimeException.class)
-	public void given_BadGRammarDefinition_when_Analyzing_then_ThrowsRunTimeException() {
-		final Analyzer myGrammar;
-		GIVEN: {
-			myGrammar = new GrammarDefinition() {
+	public void undefinedAnalyzerThrowsIllegalArgumentException() {
+		final Analyzer myGrammar = new GrammarDefinition() {
 				@Override
 				protected final Analyzer define() {
-					ReporterFactory.setReporter(new NullReporter());
 					final Define expression = later();
-					return expression;
+					return expression; 
 				}
 			};
-		}
-		WHEN: {
-			myGrammar.analyze(new StringSourceCode("anything"));
-		}
-		THEN: {
-		}
+			try{
+				myGrammar.analyze(new StringSourceCode("anything")); 
+			}catch(Exception e) {
+				System.out.println("Caught: " + e);
+				throw e;
+			}
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
-	public void given_BadGRammarDefinition_when_Analyzing_then_ThrowsIllegalArgumentException() {
-		final Analyzer myGrammar;
-		GIVEN: {
-			myGrammar = new GrammarDefinition() {
+	public void badGrammarDefinitionThrowsIllegalArgumentException() {
+		final Analyzer myGrammar = new GrammarDefinition() {
 				@Override
 				protected final Analyzer define() {
-					ReporterFactory.setReporter(new NullReporter());
-					final Define expression = later();
+					@SuppressWarnings("unused")
+					final Define notUsed = later();
 					return many(kw("k"));
 				}
 			};
-		}
-		WHEN: {
-			myGrammar.analyze(new StringSourceCode("anything"));
-		}
-		THEN: {
-		}
+		myGrammar.analyze(new StringSourceCode("anything"));
 	}
 
 	private static class IfExecutorFactory implements Factory<ListExecutor> {
