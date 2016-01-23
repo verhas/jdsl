@@ -14,7 +14,7 @@ Using jdsl you define the grammar in Java using fluent API. When you have your g
 You can get a DSL in five minutes. Here comes an example:
 
 EXAMPLE
----
+-------
 
 ---
 * We want to have some numbers defined. The user can provide a pure decimal number or can give a conditional statement specifying a number. For example `1` is an appropriate 'expression'. `if(1){1}` is also an appropriate expression and is equivalent to the previous one. `if(0){2}else{1}` is also appropriate. The vague definition of the grammar will look like this:
@@ -25,7 +25,7 @@ EXAMPLE
 
 ---
 
-The easiest and recommended way defining a grammar for the above is to create an instance of the abtract class `GrammarDefintion` (you can see the whole source code in the unit test directory):
+The easiest and recommended way defining a grammar for the above is to create an instance of the abtract class `GrammarDefinition` (you can see the whole source code in the unit test directory):
 
 ```java
 		final Analyzer myGrammar = new GrammarDefinition() {
