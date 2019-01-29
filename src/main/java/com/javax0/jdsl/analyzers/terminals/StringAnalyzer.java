@@ -38,7 +38,7 @@ public class StringAnalyzer implements Rule {
 				&& input.charAt(i + 1) == PQ && input.charAt(i + 2) == PQ;
 	}
 
-	private static enum Terminator {
+	private enum Terminator {
 		DQ, PQ, DQ3, PQ3, NONE
 	}
 
@@ -143,7 +143,7 @@ public class StringAnalyzer implements Rule {
 				if (isTerminated(input, i, terminator)) {
 					return SimpleAnalysisResult.success(StringAnalyzer.class,
 							input.rest(i + length(terminator)),
-							new TerminalSymbolExecutor<String>(sb.toString()));
+                            new TerminalSymbolExecutor<>(sb.toString()));
 				}
 				if (singleLine && isNL(input.charAt(i))) {
 					return SimpleAnalysisResult.failed(StringAnalyzer.class,
@@ -163,7 +163,7 @@ public class StringAnalyzer implements Rule {
 
 	public static final Rule INSTANCE = new StringAnalyzer();
 
-	public static final Rule string() {
+	public static Rule string() {
 		return INSTANCE;
 	}
 

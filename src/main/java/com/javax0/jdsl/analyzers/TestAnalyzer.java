@@ -48,8 +48,8 @@ public class TestAnalyzer implements Rule {
 	@Override
 	public AnalysisResult analyze(final SourceCode input) {
 		final AnalysisResult result = analyzerToTest.analyze(input);
-		final boolean success = invert ? !result.wasSuccessful() : result
-				.wasSuccessful();
+		final boolean success = invert != result
+                .wasSuccessful();
 		if (success) {
 			return SimpleAnalysisResult.success(TestAnalyzer.class, input,
 					null, null);

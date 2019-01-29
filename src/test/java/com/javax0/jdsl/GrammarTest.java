@@ -25,7 +25,7 @@ public class GrammarTest {
 			.getLogger(GrammarTest.class);
 
 	private Analyzer defineMyGrammar() {
-		final Analyzer myGrammar = new GrammarDefinition() {
+		return new GrammarDefinition() {
 			@Override
 			protected final Analyzer define() {
 				ReporterFactory.setReporter(new NullReporter());
@@ -39,7 +39,6 @@ public class GrammarTest {
 				return many(expression);
 			}
 		};
-		return myGrammar;
 	}
 
 	@Test
@@ -75,8 +74,7 @@ public class GrammarTest {
 		final Analyzer myGrammar = new GrammarDefinition() {
 				@Override
 				protected final Analyzer define() {
-					final Define expression = later();
-					return expression; 
+					return later();
 				}
 			};
 			try{

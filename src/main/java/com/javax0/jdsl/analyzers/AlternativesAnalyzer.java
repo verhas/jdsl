@@ -1,5 +1,6 @@
 package com.javax0.jdsl.analyzers;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,9 +22,7 @@ public class AlternativesAnalyzer implements Rule {
 	private final Reporter reporter = ReporterFactory.getReporter();
 
 	public void add(final Analyzer... analyzers) {
-		for (final Analyzer analyzer : analyzers) {
-			analyzerList.add(analyzer);
-		}
+		Collections.addAll(analyzerList, analyzers);
 	}
 
 	private boolean analyzerIsNotNullAnalyzer(Analyzer analyzer) {

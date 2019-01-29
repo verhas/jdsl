@@ -26,14 +26,7 @@ public class LogReporter implements Reporter {
 
 	private static final String ELLIPSIS = "...";
 
-	private static final ThreadLocal<Integer> logTabSize = new ThreadLocal<Integer>() {
-
-		@Override
-		protected Integer initialValue() {
-			return 0;
-		}
-
-	};
+	private static final ThreadLocal<Integer> logTabSize = ThreadLocal.withInitial(() -> 0);
 
 	private static int maxDebugChars = 16;
 

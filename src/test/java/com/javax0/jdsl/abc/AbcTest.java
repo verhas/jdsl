@@ -68,8 +68,7 @@ public class AbcTest {
 			rules.add(a);
 			rules.add(b);
 			rules.add(c);
-			final Rule abc = new EqLen(rules);
-			return abc;
+			return new EqLen(rules);
 		}
 
 	}

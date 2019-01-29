@@ -1,5 +1,6 @@
 package com.javax0.jdsl.analyzers;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,9 +39,7 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 	 * @param analyzers
 	 */
 	public void add(final Analyzer... analyzers) {
-		for (final Analyzer analyzer : analyzers) {
-			analyzerList.add(analyzer);
-		}
+		Collections.addAll(analyzerList, analyzers);
 	}
 
 	/**

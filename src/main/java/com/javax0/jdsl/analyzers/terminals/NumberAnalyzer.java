@@ -69,7 +69,7 @@ public class NumberAnalyzer implements Rule {
 			}
 			if (!isChar(i, input, '.', 'e', 'E')) {
 				return SimpleAnalysisResult.success(NumberAnalyzer.class,
-						input.rest(i), new TerminalSymbolExecutor<Long>(result
+						input.rest(i), new TerminalSymbolExecutor<>(result
 								* sig));
 			}
 			double mantissa = (double) result;
@@ -98,11 +98,11 @@ public class NumberAnalyzer implements Rule {
 				}
 				exponent *= esig;
 				return SimpleAnalysisResult.success(NumberAnalyzer.class, input
-						.rest(i), new TerminalSymbolExecutor<Double>(mantissa
+						.rest(i), new TerminalSymbolExecutor<>(mantissa
 						* sig * Math.pow(10.0, exponent)));
 			} else {
 				return SimpleAnalysisResult.success(NumberAnalyzer.class, input
-						.rest(i), new TerminalSymbolExecutor<Double>(mantissa
+						.rest(i), new TerminalSymbolExecutor<>(mantissa
 						* sig));
 			}
 		} else {
@@ -112,7 +112,7 @@ public class NumberAnalyzer implements Rule {
 
 	private static final Rule INSTANCE = new NumberAnalyzer();
 	
-	public static final Rule number() {
+	public static Rule number() {
 		return INSTANCE;
 	}
 

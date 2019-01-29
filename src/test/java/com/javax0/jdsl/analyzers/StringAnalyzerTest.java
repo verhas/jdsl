@@ -58,7 +58,7 @@ public class StringAnalyzerTest {
 					sourceCode(separator + testString + separator + "."));
 			assertTrue(result.wasSuccessful());
 			assertEquals(matchString,
-					(String) result.getExecutor().execute(null));
+					result.getExecutor().execute(null));
 			assertEquals(1, result.remainingSourceCode().length());
 			assertEquals('.', result.remainingSourceCode().charAt(0));
 		}

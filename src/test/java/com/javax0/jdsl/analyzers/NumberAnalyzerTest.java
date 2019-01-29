@@ -50,7 +50,7 @@ public class NumberAnalyzerTest {
 		Assert.assertEquals(remainderLength, remainder.length());
 	}
 
-	LongStringTuple ltuples[] = tuples(tuple(1230L, "1230"),
+	final LongStringTuple[] ltuples = tuples(tuple(1230L, "1230"),
 			tuple(-1230L, "-1230"), tuple(+1230L, "+1230"));
 
 	@Test
@@ -95,7 +95,7 @@ public class NumberAnalyzerTest {
 		Assert.assertEquals(expected, actual);
 	}
 
-	DoubleStringTuple dtuples[] = tuples(tuple(1230.0, "1230.0"),
+	final DoubleStringTuple[] dtuples = tuples(tuple(1230.0, "1230.0"),
 			tuple(1230.0, "1230."), tuple(-1230.0, "-1230.0"),
 			tuple(-1230.0, "-123E1"), tuple(-12300.0, "-123E2"),
 			tuple(-1230.0, "-123.E1"), tuple(-12300.0, "-123.E2"),

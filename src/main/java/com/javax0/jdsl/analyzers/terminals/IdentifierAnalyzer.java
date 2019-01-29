@@ -58,18 +58,18 @@ public class IdentifierAnalyzer implements Analyzer {
 			}
 			return SimpleAnalysisResult.success(IdentifierAnalyzer.class,
 					input.rest(i),
-					new TerminalSymbolExecutor<String>(sb.toString()));
+                    new TerminalSymbolExecutor<>(sb.toString()));
 		} else {
 			return SimpleAnalysisResult.failed(IdentifierAnalyzer.class);
 		}
 	}
 
-	public static final Analyzer identifier() {
+	public static Analyzer identifier() {
 		return new IdentifierAnalyzer();
 	}
 
 	@Override
 	public String toString() {
-		return "number";
+		return "identifier";
 	}
 }

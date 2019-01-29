@@ -5,6 +5,7 @@ package com.javax0.jdsl.analyzers;
  * 
  * @author Peter Verhas
  */
+@FunctionalInterface
 public interface Analyzer {
 
 	/**

@@ -22,7 +22,7 @@ public class WhiteSpaceSkippingAnalyzer extends SkippingAnalyzer {
 		return i;
 	}
 
-	private static Rule INSTANCE = new WhiteSpaceSkippingAnalyzer();
+	private static final Rule INSTANCE = new WhiteSpaceSkippingAnalyzer();
 
 	public static Rule spaces() {
 		return INSTANCE;

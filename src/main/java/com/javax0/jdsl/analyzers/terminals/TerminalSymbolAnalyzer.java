@@ -15,18 +15,8 @@ public class TerminalSymbolAnalyzer implements Rule {
 	public interface CharCompare {
 		boolean isEqual(char a, char b);
 
-		CharCompare caseSensitive = new CharCompare() {
-			@Override
-			public boolean isEqual(char a, char b) {
-				return a == b;
-			}
-		};
-		CharCompare caseInsensitive = new CharCompare() {
-			@Override
-			public boolean isEqual(char a, char b) {
-				return Character.toLowerCase(a) == Character.toLowerCase(b);
-			}
-		};
+		CharCompare caseSensitive = (a, b) -> a == b;
+		CharCompare caseInsensitive = (a, b) -> Character.toLowerCase(a) == Character.toLowerCase(b);
 
 	}
 
