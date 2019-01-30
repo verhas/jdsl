@@ -9,7 +9,7 @@ import java.util.List;
  * the resulting list has only one element and then the element itself is
  * returned and not the list.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class SimpleListExecutor implements ListExecutor {

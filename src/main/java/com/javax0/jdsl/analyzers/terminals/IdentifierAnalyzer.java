@@ -23,8 +23,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * {@code identifier()} from that class is to be included to the grammar
  * definition.
  * 
- * @author Peter Verhas
- * 
+ *
  */
 public class IdentifierAnalyzer implements Analyzer {
 	private final Reporter reporter = ReporterFactory.getReporter();

@@ -14,7 +14,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * If there is any underlying analyzer that accepts the start of the input then
  * the result of that (first one) analysis is returned.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class AlternativesAnalyzer implements Rule {

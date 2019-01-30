@@ -3,7 +3,6 @@ package com.javax0.jdsl.analyzers;
 /**
  * A syntax analyzer.
  * 
- * @author Peter Verhas
  */
 @FunctionalInterface
 public interface Analyzer {

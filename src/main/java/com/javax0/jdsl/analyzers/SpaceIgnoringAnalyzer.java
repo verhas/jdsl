@@ -13,7 +13,7 @@ import com.javax0.jdsl.executors.SimpleListExecutor;
  * {@link SkippingAnalyzer}, typically an instance of the
  * {@link WhiteSpaceSkippingAnalyzer}.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public abstract class SpaceIgnoringAnalyzer implements Rule {

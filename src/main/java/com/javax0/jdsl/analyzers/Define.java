@@ -17,7 +17,7 @@ package com.javax0.jdsl.analyzers;
  *  ...
  * </pre>
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public interface Define extends Analyzer {

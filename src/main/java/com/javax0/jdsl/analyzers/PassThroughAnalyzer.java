@@ -7,7 +7,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * PassThroughAnalyzer only invokes the underlying analyzer. This is used to
  * build grammar structure, which is recursive (usually grammars are).
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class PassThroughAnalyzer implements Define {

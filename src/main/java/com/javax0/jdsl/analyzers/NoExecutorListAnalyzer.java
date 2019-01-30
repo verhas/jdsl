@@ -24,8 +24,7 @@ import java.util.List;
  * list( kw("A"),kw("B"),kw("C") )
  * </pre>
  * 
- * @author Peter Verhas
- * 
+ *
  */
 public class NoExecutorListAnalyzer extends ListAnalyzer {
 

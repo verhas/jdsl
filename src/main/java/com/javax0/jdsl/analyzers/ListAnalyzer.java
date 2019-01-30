@@ -17,7 +17,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * If there is any skipping analyzer defined then it is used before the list,
  * between the list elements and after the list.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class ListAnalyzer extends SpaceIgnoringAnalyzer {

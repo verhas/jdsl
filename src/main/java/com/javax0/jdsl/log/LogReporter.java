@@ -19,8 +19,7 @@ import com.javax0.jdsl.analyzers.SourceCode;
  * important to analyze and debug the library itself but rather the program that
  * uses the library.
  * 
- * @author Peter Verhas
- * 
+ *
  */
 public class LogReporter implements Reporter {
 

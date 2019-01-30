@@ -13,7 +13,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * {@link #success(Class, SourceCode, Executor, State)} to get an instance of
  * the class.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class SimpleAnalysisResult implements AnalysisResult {

@@ -9,7 +9,7 @@ import java.util.List;
  * It is recommended that list executors extend this class instead of
  * implementing the interface directly.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public abstract class AbstractListExecutor implements ListExecutor {

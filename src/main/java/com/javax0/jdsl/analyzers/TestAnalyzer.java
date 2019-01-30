@@ -20,7 +20,7 @@ import com.javax0.jdsl.GrammarDefinition;
  * used instead of {@link #not(Analyzer)} when the word "testNot" is better for
  * the readability.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class TestAnalyzer implements Rule {

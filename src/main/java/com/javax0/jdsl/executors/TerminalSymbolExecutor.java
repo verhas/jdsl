@@ -9,7 +9,7 @@ package com.javax0.jdsl.executors;
  * type for {@code <T>} and set the value of type {@code T} to return when the
  * symbol is executed during run time.
  * 
- * @author Peter Verhas
+ *
  */
 public class TerminalSymbolExecutor<T> implements Executor {
 	private final T object;

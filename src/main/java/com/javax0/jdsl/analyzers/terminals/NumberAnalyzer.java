@@ -18,7 +18,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * of the analysis will contain an executor that returns the analyzed value of
  * the number, either as a {@code Long} or {@code Double}.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class NumberAnalyzer implements Rule {

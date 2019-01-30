@@ -17,7 +17,7 @@ import com.javax0.jdsl.executors.ListExecutor;
  * <p>
  * {@code maxRepetition} can not be zero.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {

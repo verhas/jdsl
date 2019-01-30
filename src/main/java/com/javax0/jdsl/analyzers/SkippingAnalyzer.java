@@ -14,7 +14,7 @@ import com.javax0.jdsl.log.ReporterFactory;
  * Skipping analyzers are always successful. If there is no character to ignore
  * then the skipping analyzers return in their result the original input.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public abstract class SkippingAnalyzer implements Rule {

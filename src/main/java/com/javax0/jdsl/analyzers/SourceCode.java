@@ -9,7 +9,7 @@ package com.javax0.jdsl.analyzers;
  * <p>
  * For a sample implementation have a look at {@link StringSourceCode}.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public interface SourceCode {

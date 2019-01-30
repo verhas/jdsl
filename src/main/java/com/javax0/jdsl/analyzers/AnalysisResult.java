@@ -4,7 +4,7 @@ import com.javax0.jdsl.executors.Executor;
 
 /**
  * Type to return by an analyzer.
- * @author Peter Verhas
+ *
  *
  */
 public interface AnalysisResult {

@@ -8,7 +8,7 @@ package com.javax0.jdsl.analyzers;
  * <p>
  * Usual usage does not need the direct use of this analyzer.
  * 
- * @author Peter Verhas
+ *
  * 
  */
 public class WhiteSpaceSkippingAnalyzer extends SkippingAnalyzer {

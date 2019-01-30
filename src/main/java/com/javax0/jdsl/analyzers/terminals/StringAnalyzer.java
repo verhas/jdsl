@@ -11,8 +11,7 @@ import com.javax0.jdsl.log.ReporterFactory;
 /**
  * Analyzes a string.
  * 
- * @author Peter Verhas
- * 
+ *
  */
 public class StringAnalyzer implements Rule {
 	private final Reporter reporter = ReporterFactory.getReporter();
