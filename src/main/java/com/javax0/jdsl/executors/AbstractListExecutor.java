@@ -29,7 +29,7 @@ public abstract class AbstractListExecutor implements ListExecutor {
 	}
 
 	/**
-	 * @return the number of the executors
+	 * @return the number of the executors in the list
 	 */
 	public int numberOfExecutors() {
 		return executorList.size();

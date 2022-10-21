@@ -7,6 +7,8 @@ import com.javax0.jdsl.executors.Executor;
 import com.javax0.jdsl.executors.Factory;
 import com.javax0.jdsl.executors.ListExecutor;
 
+import static java.lang.String.format;
+
 /**
  * Implements an analyzer that accepts a code if the underlying analyzers accept
  * the starts of the input a few times. The number of times the underlying
@@ -39,8 +41,7 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 			final int maxRepetition) {
 		super(listExecutorFactory);
 		if (minRepetition < 0) {
-			throw new IllegalArgumentException("minRepetition is "
-					+ minRepetition + " should not be negative");
+			throw new IllegalArgumentException(format("minRepetition is %d should not be negative", minRepetition));
 		}
 		if (maxRepetition == 0) {
 			throw new IllegalArgumentException(
@@ -48,10 +49,7 @@ public class SequenceAnalyzer extends SpaceIgnoringAnalyzer {
 		}
 		if (maxRepetition != INFINITE && maxRepetition < minRepetition) {
 			throw new IllegalArgumentException(
-					"maxRepetition "
-							+ maxRepetition
-							+ " can be -1 for infinite max, or can be larger than or equal to minRepetition "
-							+ minRepetition);
+					format("maxRepetition %d can be -1 for infinite, or can be larger than or equal to minRepetition %d", maxRepetition, minRepetition));
 		}
 		this.analyzer = analyzer;
 		this.minRepetition = minRepetition;

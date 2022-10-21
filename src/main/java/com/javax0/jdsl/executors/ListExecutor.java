@@ -12,6 +12,7 @@ import java.util.List;
  * that the second (number one) or third (number two) element of the list of the executors and finally returns the
  * result of the final one.
  *
+ * @author Peter Verhas
  */
 public interface ListExecutor extends Executor {
     void setList(final List<Executor> executorList);

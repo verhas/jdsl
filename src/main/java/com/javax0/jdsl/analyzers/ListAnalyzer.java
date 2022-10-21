@@ -47,7 +47,7 @@ public class ListAnalyzer extends SpaceIgnoringAnalyzer {
 	 * analysis this executor will be furnished with the underlying executors
 	 * from the result of the analysis performed by the list elements.
 	 */
-	public ListAnalyzer(final Factory<ListExecutor> listExecutorFactory) {
+	public ListAnalyzer(final Factory<? extends ListExecutor> listExecutorFactory) {
 		super(listExecutorFactory);
 	}
 

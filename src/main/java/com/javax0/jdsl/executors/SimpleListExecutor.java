@@ -12,7 +12,7 @@ import java.util.List;
  *
  * 
  */
-public class SimpleListExecutor implements ListExecutor {
+public class SimpleListExecutor extends AbstractListExecutor {
 
 	@Override
 	public Object execute(Context context) {

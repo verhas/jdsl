@@ -1,11 +1,17 @@
 package com.javax0.jdsl.analyzers;
 
+import com.javax0.jdsl.GrammarDefinition;
 import com.javax0.jdsl.log.Reporter;
 import com.javax0.jdsl.log.ReporterFactory;
 
 /**
  * PassThroughAnalyzer only invokes the underlying analyzer. This is used to
  * build grammar structure, which is recursive (usually grammars are).
+ *
+ * When the grammar is built there is a need for an analyzer which is not defined yet.
+ * In that case the method {@link GrammarDefinition#later()} is invoked.
+ * It returns a {@link PassThroughAnalyzer} instance, and later the code can call {@link #define(Analyzer)} to
+ * define the underlying analyzer.
  * 
  *
  * 

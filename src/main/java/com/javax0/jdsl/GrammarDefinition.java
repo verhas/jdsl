@@ -1,13 +1,31 @@
 package com.javax0.jdsl;
 
-import com.javax0.jdsl.analyzers.*;
+import com.javax0.jdsl.analyzers.AlternativesAnalyzer;
+import com.javax0.jdsl.analyzers.AnalysisResult;
+import com.javax0.jdsl.analyzers.Analyzer;
+import com.javax0.jdsl.analyzers.Define;
+import com.javax0.jdsl.analyzers.ListAnalyzer;
+import com.javax0.jdsl.analyzers.NoExecutorListAnalyzer;
+import com.javax0.jdsl.analyzers.PassThroughAnalyzer;
+import com.javax0.jdsl.analyzers.Rule;
+import com.javax0.jdsl.analyzers.SequenceAnalyzer;
+import com.javax0.jdsl.analyzers.SimpleAnalysisResult;
+import com.javax0.jdsl.analyzers.SkippingAnalyzer;
+import com.javax0.jdsl.analyzers.SourceCode;
+import com.javax0.jdsl.analyzers.WhiteSpaceSkippingAnalyzer;
 import com.javax0.jdsl.analyzers.terminals.TerminalSymbolAnalyzer;
-import com.javax0.jdsl.executors.*;
+import com.javax0.jdsl.executors.Factory;
+import com.javax0.jdsl.executors.ListExecutor;
+import com.javax0.jdsl.executors.SimpleListExecutor;
+import com.javax0.jdsl.executors.SimpleListExecutorFactory;
+import com.javax0.jdsl.executors.SingletonFactory;
+import com.javax0.jdsl.executors.TerminalSymbolExecutor;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static com.javax0.jdsl.analyzers.SequenceAnalyzer.INFINITE;
+import static java.lang.String.format;
 
 /**
  * This class is an abstract class to ease the build of grammar. To use it you can
@@ -76,13 +94,11 @@ public abstract class GrammarDefinition implements Analyzer {
         for (PassThroughAnalyzer pta : delayedDefinitionAnalyzers) {
             if (!pta.isDefined()) {
                 failed = true;
-                sb.append(pta.toString()).append("\n");
+                sb.append(pta).append("\n");
             }
         }
         if (failed) {
-            throw new IllegalArgumentException(
-                    "Delayed defined analyzer(s) were not defined: "
-                            + sb.toString());
+            throw new IllegalArgumentException(format("Delayed defined analyzer(s) were not defined: %s", sb));
         }
     }
 
@@ -91,8 +107,7 @@ public abstract class GrammarDefinition implements Analyzer {
             grammar = define();
         }
         if (grammar == null) {
-            throw new IllegalArgumentException(
-                    "'grammar' was not set in the grammar definition");
+            throw new IllegalArgumentException("'grammar' was not set in the grammar definition");
         }
         assertAllDelayedAnalyzersAreDefined();
         AnalysisResult result = grammar.analyze(input);
@@ -103,13 +118,12 @@ public abstract class GrammarDefinition implements Analyzer {
         return result;
     }
 
-    public final void setSkippingAnalyzer(
-            final SkippingAnalyzer skippingAnalyzer) {
+    public final void setSkippingAnalyzer(final SkippingAnalyzer skippingAnalyzer) {
         this.skippingAnalyzer = skippingAnalyzer;
     }
 
     public final void skipSpaces() {
-        setSkippingAnalyzer(new WhiteSpaceSkippingAnalyzer());
+        setSkippingAnalyzer(WhiteSpaceSkippingAnalyzer.spaces());
     }
 
     public final void caseInsensitive() {
@@ -141,22 +155,53 @@ public abstract class GrammarDefinition implements Analyzer {
      * {@code or(kw("A"),kw("B"))}. Alternative analyzer does NOT flatten
      * keyword lists.
      * <p>
-     * Note that this version of them ethod creates
-     * {@link TerminalSymbolAnalyzer} that compares the keywords case sensitive.
-     * If you want case insensitive keywords, then use
+     * Note that this version of the method creates
+     * {@link TerminalSymbolAnalyzer} that compares the keywords case-sensitive.
+     * If you want case-insensitive keywords, then use {@link #caseInsensitive()}
+     * to switch the grammar to case-insensitive.
      */
     public final Rule kw(final String... keywords) {
         if (keywords.length == 1) {
-            return new TerminalSymbolAnalyzer(keywords[0], charCompare);
+            return TerminalSymbolAnalyzer.analyzer(keywords[0], charCompare);
         }
         final ListAnalyzer keywordListAnalyzer = new NoExecutorListAnalyzer();
         keywordListAnalyzer.setSkipAnalyzer(skippingAnalyzer);
         for (final String keyword : keywords) {
-            keywordListAnalyzer.add(new TerminalSymbolAnalyzer(keyword,
-                    charCompare));
+            keywordListAnalyzer.add(TerminalSymbolAnalyzer.analyzer(keyword, charCompare));
         }
         return keywordListAnalyzer;
     }
+
+    /**
+     * Same as {@link #kw(String...)} but the keywords are case-insensitive even when the grammar is set (by default) case-sensitive.
+     *
+     * @param keywords
+     * @return
+     */
+    public final Rule KW(final String... keywords) {
+        if (keywords.length == 1) {
+            return TerminalSymbolAnalyzer.analyzer(keywords[0], TerminalSymbolAnalyzer.CharCompare.caseInsensitive);
+        }
+        final ListAnalyzer keywordListAnalyzer = new NoExecutorListAnalyzer();
+        keywordListAnalyzer.setSkipAnalyzer(skippingAnalyzer);
+        for (final String keyword : keywords) {
+            keywordListAnalyzer.add(TerminalSymbolAnalyzer.analyzer(keyword, TerminalSymbolAnalyzer.CharCompare.caseInsensitive));
+        }
+        return keywordListAnalyzer;
+    }
+
+    public final Rule kw_t(final String... keywords) {
+        if (keywords.length == 1) {
+            return TerminalSymbolAnalyzer.analyzer(keywords[0], charCompare, new TerminalSymbolExecutor<>(keywords[0]));
+        }
+        final ListAnalyzer keywordListAnalyzer = new NoExecutorListAnalyzer();
+        keywordListAnalyzer.setSkipAnalyzer(skippingAnalyzer);
+        for (final String keyword : keywords) {
+            keywordListAnalyzer.add(TerminalSymbolAnalyzer.analyzer(keyword, charCompare));
+        }
+        return keywordListAnalyzer;
+    }
+
 
     /**
      * Returns a new special analyzer that implements the interface Define. This
@@ -187,13 +232,13 @@ public abstract class GrammarDefinition implements Analyzer {
      * flattening is done recursively so long as long there are
      * {@link NoExecutorListAnalyzer}s in any of the lists. This means that the
      * method {@link #kw(String...)} can be used with many arguments and when
-     * used in the argument list of a {@link #list(Analyzer...)} or {@link #list(Class, Analyzer...)} or {@link #list(Factory, Analyzer...)}
+     * used in the argument list of a {@link #list(Analyzer...)} or {@link #list(Class, Analyzer...)} or {@code list(Factory, Analyzer...)}
      * then they will have the same effect as if the strings were used
      * individually to define terminal symbols.
      */
-    public final Rule list(final Factory<ListExecutor> listExecutorFactory,
+    public final Rule list(final Factory<? extends ListExecutor> listExecutorFactory,
                            final Analyzer... analyzers) {
-        final ListAnalyzer listAnalyzer = new ListAnalyzer(listExecutorFactory);
+        final var listAnalyzer = new ListAnalyzer((Factory<ListExecutor>) listExecutorFactory);
         listAnalyzer.setSkipAnalyzer(skippingAnalyzer);
         for (final Analyzer analyzer : analyzers) {
             addAnalyzerFlattened(listAnalyzer, analyzer);
@@ -205,10 +250,8 @@ public abstract class GrammarDefinition implements Analyzer {
      * Same as {@link #list(Factory, Analyzer...)} except the first argument is
      * not a factory, but the class of the executor. For more information see
      */
-    public final Rule list(
-            final Class<ListExecutor> listExecutorClass,
-            final Analyzer... analyzers) {
-        Factory<ListExecutor> listExecutorFactory = SingletonFactory.get(listExecutorClass);
+    public final Rule list(final Class<? extends ListExecutor> listExecutorClass, final Analyzer... analyzers) {
+        final var listExecutorFactory = SingletonFactory.get(listExecutorClass);
         return list(listExecutorFactory, analyzers);
     }
 
@@ -270,6 +313,25 @@ public abstract class GrammarDefinition implements Analyzer {
                                final Analyzer analyzer) {
         return many(listExecutorFactory, analyzer, 0, 1);
     }
+
+    /**
+     * Creates a {@link SequenceAnalyzer} with one min value and one max value.
+     * This means that the underlying analyzer must match exactly once.
+     * <p>
+     * The reason for this method is that it can be used to have an executor for some  analyzers,that need
+     * "postprocessing" after they were processed. For example, the simple interpreter uses this to fetch the value of
+     * the variable after the identifier analyzer returned the name.
+     *
+     * @param listExecutorFactory the list executor factory that will create the executor to execute the single
+     *                            underlying result
+     * @param analyzer            the underlying one analyzer that has to match
+     * @return the rule
+     */
+    public final Rule one(final Factory<ListExecutor> listExecutorFactory,
+                          final Analyzer analyzer) {
+        return many(listExecutorFactory, analyzer, 1, 1);
+    }
+
 
     /**
      * Creates a {@link SequenceAnalyzer} with zero min value and one max value.
@@ -372,10 +434,9 @@ public abstract class GrammarDefinition implements Analyzer {
      * {@link GrammarDefinition}.
      */
     public final Rule manyOptional(
-            final Class<? extends ListExecutor> listExecutorClass,
+            final Class<ListExecutor> listExecutorClass,
             final Analyzer analyzer) {
-        Factory<ListExecutor> listExecutorFactory = (Factory<ListExecutor>) SingletonFactory
-                .get(listExecutorClass);
+        Factory<ListExecutor> listExecutorFactory = SingletonFactory.get(listExecutorClass);
         return manyOptional(listExecutorFactory, analyzer);
     }
 
@@ -404,10 +465,9 @@ public abstract class GrammarDefinition implements Analyzer {
      * {@link GrammarDefinition}.
      */
     public final Rule many(
-            final Class<? extends ListExecutor> listExecutorClass,
+            final Class<ListExecutor> listExecutorClass,
             final Analyzer analyzer) {
-        Factory<ListExecutor> listExecutorFactory = (Factory<ListExecutor>) SingletonFactory
-                .get(listExecutorClass);
+        Factory<ListExecutor> listExecutorFactory = SingletonFactory.get(listExecutorClass);
         return many(listExecutorFactory, analyzer);
     }
 

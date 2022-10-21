@@ -11,7 +11,8 @@ import com.javax0.jdsl.log.ReporterFactory;
 /**
  * Analyzes a string.
  * 
- *
+ * @author Peter Verhas
+ * 
  */
 public class StringAnalyzer implements Rule {
 	private final Reporter reporter = ReporterFactory.getReporter();
@@ -37,7 +38,7 @@ public class StringAnalyzer implements Rule {
 				&& input.charAt(i + 1) == PQ && input.charAt(i + 2) == PQ;
 	}
 
-	private enum Terminator {
+	private static enum Terminator {
 		DQ, PQ, DQ3, PQ3, NONE
 	}
 
@@ -142,7 +143,7 @@ public class StringAnalyzer implements Rule {
 				if (isTerminated(input, i, terminator)) {
 					return SimpleAnalysisResult.success(StringAnalyzer.class,
 							input.rest(i + length(terminator)),
-                            new TerminalSymbolExecutor<>(sb.toString()));
+							new TerminalSymbolExecutor<>(sb.toString()));
 				}
 				if (singleLine && isNL(input.charAt(i))) {
 					return SimpleAnalysisResult.failed(StringAnalyzer.class,

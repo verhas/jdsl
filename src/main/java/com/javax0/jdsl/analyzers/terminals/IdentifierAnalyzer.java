@@ -23,7 +23,8 @@ import com.javax0.jdsl.log.ReporterFactory;
  * {@code identifier()} from that class is to be included to the grammar
  * definition.
  * 
- *
+ * @author Peter Verhas
+ * 
  */
 public class IdentifierAnalyzer implements Analyzer {
 	private final Reporter reporter = ReporterFactory.getReporter();
@@ -57,7 +58,7 @@ public class IdentifierAnalyzer implements Analyzer {
 			}
 			return SimpleAnalysisResult.success(IdentifierAnalyzer.class,
 					input.rest(i),
-                    new TerminalSymbolExecutor<>(sb.toString()));
+					new TerminalSymbolExecutor<>(sb.toString()));
 		} else {
 			return SimpleAnalysisResult.failed(IdentifierAnalyzer.class);
 		}
