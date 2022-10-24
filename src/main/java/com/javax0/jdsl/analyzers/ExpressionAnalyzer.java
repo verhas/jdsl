@@ -39,16 +39,6 @@ public final class ExpressionAnalyzer implements Rule {
         return null;
     }
 
-    private static class Tuple<PostFixCall, AnalysisResult> {
-        private final PostFixCall a;
-        private final AnalysisResult result;
-
-        private Tuple(final PostFixCall a, final AnalysisResult result) {
-            this.a = a;
-            this.result = result;
-        }
-    }
-
     /**
      * A mutating class supporting the analysis process. It maintains the state of the input source code, the list of
      * collected executors, the result of the last executed analysis and the analyser used during the last analysis
@@ -328,8 +318,7 @@ public final class ExpressionAnalyzer implements Rule {
                     }
                     context.analyzeWith(listSeparatorAnalyser);
                 }
-                final var executor = factory.get();
-                executor.setList(context.executors);
+                final var executor = factory.get().withList(context.executors);
                 return SimpleAnalysisResult.success(ExpressionListAnalyser.class, context.input, executor);
             } else {
                 // empty expression list
@@ -473,8 +462,7 @@ public final class ExpressionAnalyzer implements Rule {
     }
 
     private SimpleAnalysisResult createResultWithExecutor(final AnalysisContext context) {
-        final var executor = factory.get();
-        executor.setList(context.executors);
+        final var executor = factory.get().withList(context.executors);
         return SimpleAnalysisResult.success(ExpressionAnalyzerPriorityN.class, context.input, executor);
     }
 }

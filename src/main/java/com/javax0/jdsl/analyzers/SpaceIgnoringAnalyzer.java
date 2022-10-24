@@ -84,12 +84,12 @@ public abstract class SpaceIgnoringAnalyzer implements Rule {
     protected Executor createExecutor(final List<Executor> executors) {
         final Executor executor;
         if (listExecutorFactory != null && executors.size() > 0) {
-            final ListExecutor listExecutor = listExecutorFactory.get();
+            final var listExecutor = listExecutorFactory.get();
             if (listExecutor instanceof SimpleListExecutor
                     && executors.size() == 1) {
                 executor = executors.get(0);
             } else {
-                listExecutor.setList(executors);
+                listExecutor.withList(executors);
                 executor = listExecutor;
             }
         } else {

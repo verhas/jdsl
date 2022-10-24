@@ -8,30 +8,28 @@ import java.util.List;
  * <p>
  * It is recommended that list executors extend this class instead of
  * implementing the interface directly.
- * 
- *
- * 
  */
 public abstract class AbstractListExecutor implements ListExecutor {
 
-	private List<Executor> executorList;
+    protected List<Executor> executorList;
 
-	@Override
-	public void setList(List<Executor> executorList) {
-		this.executorList = executorList;
-	}
+    @Override
+    public ListExecutor withList(List<Executor> executorList) {
+        this.executorList = executorList;
+        return this;
+    }
 
-	/**
-	 * Get the i-th executor. Throws exception if index 'i' is out of bounds.
-	 */
-	public Executor getExecutor(int i) {
-		return executorList.get(i);
-	}
+    /**
+     * Get the i-th executor. Throws exception if index 'i' is out of bounds.
+     */
+    public Executor getExecutor(int i) {
+        return executorList.get(i);
+    }
 
-	/**
-	 * @return the number of the executors in the list
-	 */
-	public int numberOfExecutors() {
-		return executorList.size();
-	}
+    /**
+     * @return the number of the executors in the list
+     */
+    public int numberOfExecutors() {
+        return executorList.size();
+    }
 }

@@ -1,7 +1,17 @@
-jdsl
-====
+= Java Domain Specific Language (JDSL)
 
-jdsl stands for Java Domain Specific Language, and it is a software library to aid the creation of domain specific languages.
+This library is a syntax analyser support library.
+It is similar to javacc or ANTLR.
+It is less efficient but, hopefully easier to use and more flexible.
+
+The conventional way to implement a language is to have a grammar definition compiled to Java.
+It also required the definition or the development of a lexical analyzer.
+
+JDSL does not compile a grammar to Java or to any other programming language, and it does not require lexical analysers.
+The design of JDSL aims to be simple and general in the expense of speed.
+
+You have to define the grammar after all, otherwise there is no language, but you do that using a fluent API.
+The library build the analysis structure from these calls during run time and then
 
 jdsl is a library, it is not a framework and not a preprocessor, code generator. You can use it just as any other library. There is no special grammar file to write and there is no need to modify your usual build process. Jdsl will not generate any JVM code or Java code for you. All it does is that it gives you nice and handy API to define your language, to analyze source code and to execute the code defined in your DSL. The features:
 
@@ -13,21 +23,20 @@ Using jdsl you define the grammar in Java using fluent API. When you have your g
 
 You can get a DSL in five minutes. Here comes an example:
 
-EXAMPLE
--------
+== EXAMPLE
 
----
+—
 * We want to have some numbers defined. The user can provide a pure decimal number or can give a conditional statement specifying a number. For example `1` is an appropriate 'expression'. `if(1){1}` is also an appropriate expression and is equivalent to the previous one. `if(0){2}else{1}` is also appropriate. The vague definition of the grammar will look like this:
 
-  * a number as an `expression`,
-  * an `if(expression){expression}`
-  * or `if(expression){expression}else{expression}`
-
----
+* a number as an `expression`,
+* an `if(expression){expression}`
+* or `if(expression){expression}else{expression}`
+'''
 
 The easiest and recommended way defining a grammar for the above is to create an instance of the abtract class `GrammarDefinition` (you can see the whole source code in the unit test directory):
 
-```java
+[source,java]
+----
 		final Analyzer myGrammar = new GrammarDefinition() {
 			@Override
 			final Analyzer define() {
@@ -42,8 +51,8 @@ The easiest and recommended way defining a grammar for the above is to create an
 				return many(expression);
 			}
 		};
-```
-  
+
+----
 
 The class `GrammarDefinition` is abstract with the abstract method `define()`. The methods defined in the class `GrammarDefinition` can be used as in the example above to describe the grammar that the analyzer will analyze.
 
@@ -61,18 +70,19 @@ Finally the created grammar is returned.
 
 The code using the method above can use the returned grammar:
 
-```java
+[source,java]
+----
 		final Analyzer myGrammar = ...
-		
+
 		...
-		
+
 		AnalysisResult result = myGrammar.analyze(new StringSourceCode(
 				"if(1){55}else{33}"));
 		Assert.assertTrue(result.wasSuccessful());
 		LOG.debug(result.getExecutor().toString());
 		Long res = (Long) result.getExecutor().execute(null);
 		Assert.assertEquals((Long) 55L, res);
-```
+----
 
 The source code for the analyzers should be provided in the form of an instance of `SourceCode`. This is a simple interface that can deliver characters one after the other. A readily implementation backed up by a String is `StringSourceCode`.
 
@@ -80,7 +90,8 @@ The method `analyze()` analyzes the source code and returns the result of the an
 
 The executor provides a method `execute()` that accept a single argument, the execution context. The executors are created by analysis process using factories. In case of keywords, numbers and so on the executors are simple and are created without any factory off-the-shelf. For example the executor of a "number" will just return the number itself. The excutor of a list will `execute()` the executors returned by the elements of the list during analysis. Optional will just execute the executor that was matched. In case of domain specific behaviour a factory have to be provided, like the `IfExecutorFactory` in the example above. The factory itself is very simple:
 
-```java
+[source,java]
+----
         private static class IfExecutorFactory implements Factory<ListExecutor> {
 
                 @Override
@@ -89,11 +100,12 @@ The executor provides a method `execute()` that accept a single argument, the ex
                 }
 
         }
-```
+----
 
 The `IfExecutor` implements the subinterface `ListExecutor` of the root `Executor` interface since this executor gets two or three underlying executors (expressions in this case) that it can executed based on its own algorithm. The `ifExecutor` class from the test example looks like the following:
 
-```java
+[source,java]
+----
 private static class IfExecutor implements ListExecutor {
 
                 @Override
@@ -124,7 +136,7 @@ private static class IfExecutor implements ListExecutor {
 
                 ...
         }
-```        
+----
 
 The class implements two methods: `execute()` and `setList()`. The firs one is needed to execute the code. `setList()` is called during analysis to set the underlying executors that result the values for the expressions that play the role of the condition and the return values. (The method `toString()` was removed from the example for brevity.)
 
@@ -132,4 +144,4 @@ The argument `Context context` in this example is not used. The actual interface
 
 The executor provides a method `execute()` that accept a single argument, which is an execution context. The execution context is an empty interface defined by the library and is not used by itself. You can pass any object as an execution context to the executors you implement.
 
-For further information and more detailed documentation visit the project [site](http://verhas.github.io/jdsl/index.html "Project site on GitHub")
+For further information and more detailed documentation visit the project http://verhas.github.io/jdsl/index.html[site]

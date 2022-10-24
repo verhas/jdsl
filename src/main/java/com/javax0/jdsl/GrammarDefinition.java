@@ -50,7 +50,7 @@ import static java.lang.String.format;
  * };
  * </pre>
  * <p>
- * Some of the methods in this class have three different forms:
+ * Some methods in this class have three different forms:
  *
  * <ol>
  * <li>method(analyzer/s)</li>
@@ -175,8 +175,8 @@ public abstract class GrammarDefinition implements Analyzer {
     /**
      * Same as {@link #kw(String...)} but the keywords are case-insensitive even when the grammar is set (by default) case-sensitive.
      *
-     * @param keywords
-     * @return
+     * @param keywords the alternative keywords
+     * @return the case-insensitive keyword rule
      */
     public final Rule KW(final String... keywords) {
         if (keywords.length == 1) {
@@ -238,7 +238,7 @@ public abstract class GrammarDefinition implements Analyzer {
      */
     public final Rule list(final Factory<? extends ListExecutor> listExecutorFactory,
                            final Analyzer... analyzers) {
-        final var listAnalyzer = new ListAnalyzer((Factory<ListExecutor>) listExecutorFactory);
+        final var listAnalyzer = new ListAnalyzer(listExecutorFactory);
         listAnalyzer.setSkipAnalyzer(skippingAnalyzer);
         for (final Analyzer analyzer : analyzers) {
             addAnalyzerFlattened(listAnalyzer, analyzer);
@@ -250,7 +250,7 @@ public abstract class GrammarDefinition implements Analyzer {
      * Same as {@link #list(Factory, Analyzer...)} except the first argument is
      * not a factory, but the class of the executor. For more information see
      */
-    public final Rule list(final Class<? extends ListExecutor> listExecutorClass, final Analyzer... analyzers) {
+    public final Rule list(final Class<ListExecutor> listExecutorClass, final Analyzer... analyzers) {
         final var listExecutorFactory = SingletonFactory.get(listExecutorClass);
         return list(listExecutorFactory, analyzers);
     }
@@ -327,9 +327,12 @@ public abstract class GrammarDefinition implements Analyzer {
      * @param analyzer            the underlying one analyzer that has to match
      * @return the rule
      */
-    public final Rule one(final Factory<ListExecutor> listExecutorFactory,
-                          final Analyzer analyzer) {
+    public final Rule one(final Factory<ListExecutor> listExecutorFactory, final Analyzer analyzer) {
         return many(listExecutorFactory, analyzer, 1, 1);
+    }
+
+    public final Rule one(final ListExecutor listExecutor, final Analyzer analyzer) {
+        return one(Factory.create(listExecutor), analyzer);
     }
 
 
@@ -339,7 +342,7 @@ public abstract class GrammarDefinition implements Analyzer {
      * matched once.
      */
     public final Rule optional(
-            final Class<? extends ListExecutor> listExecutorClass,
+            final Class<ListExecutor> listExecutorClass,
             final Analyzer analyzer) {
         return many(listExecutorClass, analyzer, 0, 1);
     }
@@ -358,7 +361,7 @@ public abstract class GrammarDefinition implements Analyzer {
      * {@code optional(list(class, analyzers))}
      */
     public final Rule optional(
-            final Class<? extends ListExecutor> listExecutorClass,
+            final Class<ListExecutor> listExecutorClass,
             final Analyzer... analyzers) {
         return optional(listExecutorClass, list(analyzers));
     }
@@ -401,16 +404,15 @@ public abstract class GrammarDefinition implements Analyzer {
      * {@link GrammarDefinition}.
      */
     public final Rule many(
-            final Class<? extends ListExecutor> listExecutorClass,
+            final Class<ListExecutor> listExecutorClass,
             final Analyzer analyzer, final int min, final int max) {
-        Factory<ListExecutor> listExecutorFactory = (Factory<ListExecutor>) SingletonFactory
-                .get(listExecutorClass);
+        Factory<ListExecutor> listExecutorFactory = SingletonFactory.get(listExecutorClass);
         return many(listExecutorFactory, analyzer, min, max);
     }
 
     /**
      * Same as {@link #many(Factory, Analyzer, int, int)} but it does not accept
-     * any factory. Instead it uses a {@link SimpleListExecutorFactory}.
+     * any factory. Instead, it uses a {@link SimpleListExecutorFactory}.
      */
     public final Rule many(final Analyzer analyzer, final int min, final int max) {
         return many(SimpleListExecutorFactory.INSTANCE, analyzer, min, max);
@@ -442,7 +444,7 @@ public abstract class GrammarDefinition implements Analyzer {
 
     /**
      * Same as {@link #manyOptional(Factory, Analyzer)} but it does not accept
-     * any factory. Instead it uses a {@link SimpleListExecutorFactory}.
+     * any factory. Instead, it uses a {@link SimpleListExecutorFactory}.
      */
     public final Rule manyOptional(final Analyzer analyzer) {
         return manyOptional(new SimpleListExecutorFactory(), analyzer);

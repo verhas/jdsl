@@ -72,9 +72,8 @@ public class GrammarTest {
     public void undefinedAnalyzerThrowsIllegalArgumentException() {
         final Analyzer myGrammar = new GrammarDefinition() {
             @Override
-            protected final Analyzer define() {
-                final Define expression = later();
-                return expression;
+            protected Analyzer define() {
+                return later();
             }
         };
         try {
@@ -89,7 +88,7 @@ public class GrammarTest {
     public void badGrammarDefinitionThrowsIllegalArgumentException() {
         final Analyzer myGrammar = new GrammarDefinition() {
             @Override
-            protected final Analyzer define() {
+            protected Analyzer define() {
                 @SuppressWarnings("unused") final Define notUsed = later();
                 return many(kw("k"));
             }
@@ -130,8 +129,9 @@ public class GrammarTest {
         private List<Executor> executorList;
 
         @Override
-        public void setList(final List<Executor> executorList) {
+        public ListExecutor withList(final List<Executor> executorList) {
             this.executorList = executorList;
+            return this;
         }
 
         @Override
